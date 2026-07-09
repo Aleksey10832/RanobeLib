@@ -20,7 +20,7 @@ body{
     border-bottom: 1px solid rgb(200, 199, 199)
 }
 .paragraph{
-    text-align: justify;
+    text-align: left;
     margin: 0 auto;
     margin-bottom: 8px;
     color: rgb(200, 199, 199);
