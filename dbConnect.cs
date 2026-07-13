@@ -10,6 +10,7 @@ public class Database: DbContext
     public DbSet<Ranobe> Ranobes {get; set;}
     public DbSet<Chapter> Chapters {get; set;}
     public DbSet<Paragraf> Paragrafs {get; set;}
+    public DbSet<RanobeParser> RanobeParsers {get; set;}
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -17,11 +18,18 @@ public class Database: DbContext
             Environment.GetEnvironmentVariable("DB_CONNECTION_STRING"));
     }
 }
-
+public class RanobeParser
+{
+    public string Id {get; set;}
+    public string userId{get; set;}
+    public string name{get; set;}
+    public string ranobeURL{get; set;}
+}
 public class Ranobe
 {
     public string Id {get; set;}
     public string name {get; set;}
+    public string userId {get; set;}
     public List<Chapter> chapters {get; set;} = [];
 
 }
