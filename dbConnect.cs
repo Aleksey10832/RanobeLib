@@ -30,7 +30,7 @@ public class Ranobe
     public string Id {get; set;}
     public string name {get; set;}
     public string userId {get; set;}
-    public List<Chapter> chapters {get; set;} = [];
+    public List<Chapter> chapters {get; set;}
 
 }
 public class Chapter
@@ -39,7 +39,7 @@ public class Chapter
     public string ranobeId {get; set;}
     public string name {get; set;}
     public int number {get; set;}
-    public List<Paragraf> paragrafs {get; set;} = [];
+    public List<Paragraf> paragrafs {get; set;}
 }
 public class Paragraf
 {
