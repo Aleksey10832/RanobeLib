@@ -3,7 +3,7 @@ using AngleSharp;
 using DbConnect;
 using System.Collections.Concurrent;
 
-namespace App.Parse;
+namespace App.Parser;
 public static class ParsersMeneger{
     public static ConcurrentDictionary<string, Parse> parsers {get;}= new();
     public static bool Start(string ranobeUrl, string userId)
@@ -82,11 +82,11 @@ public class Parse
         
     }
 }
-public record ParseStatus{
-    public int status = 0;
-    public string ranobeName = "";
-    public int chaptersCount = 0;
-    public int chaptersDone = 0;
+public class ParseStatus{
+    public double status {get; set;}
+    public string ranobeName {get; set;}
+    public int chaptersCount {get; set;}
+    public int chaptersDone {get; set;}
     public double getStatus()
     {
         return Math.Round((double)chaptersDone / chaptersCount, 4) * 100;

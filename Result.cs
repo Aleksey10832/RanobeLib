@@ -1,4 +1,4 @@
-namespace Result;
+namespace App.Result;
 public record Result<T>
 {
     public int StatusCode {get; set;}
