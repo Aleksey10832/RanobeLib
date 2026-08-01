@@ -34,10 +34,13 @@ public class ParseController: ControllerBase
         return Result<ParseStatus>.Succesful(ParsersMeneger.GetParse("123").status);
     }
     
-    [HttpDelete()]
-    public async Task<Result<string>> getAllRanobe( string RanobeId )
+    [HttpDelete("{RanobeId}")]
+    public async Task<Result<string>> deleteRanobe( string RanobeId )
     {
-        
+        if(await database.Ranobes.FindAsync(RanobeId) == null)
+        {
+            return Result<string>.Fail(404, "Нет такой ранобе");
+        }
         List<Chapter> chapters = await database.Chapters.Where(r => r.ranobeId == RanobeId).ToListAsync();
         chapters.ForEach(chapter =>{
             database.Paragrafs.RemoveRange(database.Paragrafs.Where(paragraf => paragraf.chapterId == chapter.Id));
