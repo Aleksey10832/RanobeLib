@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace App.Controller.Main;
 
+
+
 [Route("/ranobe")]
 public class RanobeController: ControllerBase
 {
@@ -23,9 +25,9 @@ public class RanobeController: ControllerBase
 
     [HttpGet("{page}")]
     [HttpGet("")]
-    public async Task<Result<List<Ranobe>>> getAllRanobe(int page)
+    public async Task<Result<RanobeP>> getAllRanobe(int page)
     {
-        return Result<List<Ranobe>>.Succesful(await database.Ranobes.Where(r => r.name != null).Take(30).Skip(30 * page).ToListAsync());
+        return Result<RanobeP>.Succesful(new RanobeP(await database.Ranobes.Where(r => r.name != null).Take(30).Skip(30 * page).ToListAsync(), await database.Ranobes.CountAsync()));
     }
     [HttpGet("{ranobeId}/chapter/{id}")]
     public async Task<Result<Chapter>> getChapter(string id)
@@ -37,5 +39,19 @@ public class RanobeController: ControllerBase
             return Result<Chapter>.Succesful(chapter);
         }
         return Result<Chapter>.Fail(404, "Нет такой главы");
+    }
+    
+
+
+
+    public class RanobeP
+    {
+        public List<Ranobe> ranobe {get; set;}
+        public double pages {get; set;}
+        public RanobeP(List<Ranobe> ranobe, int count)
+        {
+            this.ranobe = ranobe;
+            this.pages = Math.Round((double)count / 20, 2);
+        }
     }
 }
