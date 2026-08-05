@@ -1,26 +1,21 @@
-"use client";
-import Image from "next/image";
-import { useEffect, useState } from "react";
+'use client';
+import Ranobe from "./models/ranobe";
+import { useEffect, useState } from "react"
 
-interface Ranobe {
-  id: string;
-  name: string
-}
-export default function Home() {
-  const [ranobeList, setRanobeList] = useState([{}]);
+
+export default function RanobeAll() {
+  const [ranobeList, setRanobeList] = useState([{id: "", name: "", pages: 0}]);
   useEffect(() => {
-    fetch("http://127.0.0.1:9000/ranobe/0").then(response => {
-      response.json().then((value) => {
-        const ranobe: Ranobe[] = value.value.ranobe
-        setRanobeList(ranobe);
-      })
-      // setRanobeList(response.value);
+    fetch("http://localhost:9000/ranobe").then(response => 
+      response.json()).then((value) => {
+      const ranobeR: Ranobe[] = value.value.ranobe
+      setRanobeList(ranobeR);
     })
-  });
+  }, []);
   return (
     <div className="flex flex-row gap-10 mx-auto w-150">
       {ranobeList.map(el => {
-        return (<div className="cart basis-1/3"><a href={"ranobe/" + el.id}>{el.name}</a></div>)
+        return (<div key={el.id} className="cart basis-1/3"><a href={"ranobe/" + el.id + "/0"}>{el.name}</a></div>)
       })}
     </div>
   );
