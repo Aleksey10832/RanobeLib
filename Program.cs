@@ -10,12 +10,13 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:3000", "http://127.0.0.1:3000", "http://192.168.1.186:3000")
               .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials();
+              .AllowAnyHeader();
     });
 });
 builder.Services.AddControllers();
 var app = builder.Build();
+app.UseRouting();
 app.UseCors("NextJSPolicy");
+app.UseAuthorization();
 app.MapControllers();
 app.Run();

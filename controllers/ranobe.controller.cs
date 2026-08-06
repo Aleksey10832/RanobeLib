@@ -29,13 +29,13 @@ public class RanobeController: ControllerBase
     {
         return Result<RanobeP>.Succesful(new RanobeP(await database.Ranobes.Where(r => r.name != null).Take(30).Skip(30 * page).ToListAsync(), await database.Ranobes.CountAsync()));
     }
-    [HttpGet("{ranobeId}/chapter/{id}")]
-    public async Task<Result<Chapter>> getChapter(string id)
+    [HttpGet("{ranobeId}/chapter/{number}")]
+    public async Task<Result<Chapter>> getChapter(string ranobeId, int number)
     {
-        Chapter? chapter = await database.Chapters.FindAsync(id);
+        Chapter? chapter = await database.Chapters.Where(el => el.ranobeId == ranobeId).FirstAsync(el => el.number == number);
         if(chapter != null)
         {
-            chapter.paragrafs = await database.Paragrafs.Where(p => p.chapterId == id).OrderBy(p => p.number).ToListAsync();
+            chapter.paragrafs = await database.Paragrafs.Where(p => p.chapterId == chapter.Id).OrderBy(p => p.number).ToListAsync();
             return Result<Chapter>.Succesful(chapter);
         }
         return Result<Chapter>.Fail(404, "Нет такой главы");
