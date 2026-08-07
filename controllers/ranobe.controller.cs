@@ -15,12 +15,15 @@ public class RanobeController: ControllerBase
     public async Task<Result<Ranobe>> getById(string id, int page)
     {
         Ranobe? ranobe = await database.Ranobes.FindAsync(id);
-        if(ranobe != null)
-        {
-            ranobe.chapters = await database.Chapters.Where(c => c.ranobeId == id).OrderBy(c => c.number).Skip(page * 100).Take(100).ToListAsync();
-            return Result<Ranobe>.Succesful(ranobe);
+        if(ranobe != null){
+            try{
+                ranobe.chapters = await database.Chapters.Where(c => c.ranobeId == id).OrderBy(c => c.number).Skip(page * 100).Take(100).ToListAsync();
+                return Result<Ranobe>.Succesful(ranobe);
+            } catch{
+                return Result<Ranobe>.Fail(400, "Ну блять, нету больше нихуя");
+            }
         }
-        return Result<Ranobe>.Fail(404, "HUY");
+        return Result<Ranobe>.Fail(404, "Куда ты блять лезешь");
     }
 
     [HttpGet("{page}")]
@@ -32,13 +35,14 @@ public class RanobeController: ControllerBase
     [HttpGet("{ranobeId}/chapter/{number}")]
     public async Task<Result<Chapter>> getChapter(string ranobeId, int number)
     {
-        Chapter? chapter = await database.Chapters.Where(el => el.ranobeId == ranobeId).FirstAsync(el => el.number == number);
-        if(chapter != null)
-        {
+        try{
+            Chapter? chapter = await database.Chapters.Where(el => el.ranobeId == ranobeId).FirstAsync(el => el.number == number);
             chapter.paragrafs = await database.Paragrafs.Where(p => p.chapterId == chapter.Id).OrderBy(p => p.number).ToListAsync();
             return Result<Chapter>.Succesful(chapter);
+        } catch{
+            return Result<Chapter>.Fail(404, "Нет такой главы");
         }
-        return Result<Chapter>.Fail(404, "Нет такой главы");
+        
     }
     
 

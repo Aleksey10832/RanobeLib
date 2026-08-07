@@ -1,5 +1,5 @@
 namespace App.Result;
-public record Result<T>
+public record Result<T> : IResult
 {
     public int StatusCode {get; set;}
     public string StatusMessage {get; set;} = "Ok";
@@ -19,5 +19,17 @@ public record Result<T>
     }
     public static Result<T> Fail(int StatusCode, string StatusMessage){
         return new Result<T>(StatusCode, StatusMessage);
+    }
+    public async Task ExecuteAsync(HttpContext context)
+    {
+        context.Response.StatusCode = this.StatusCode;
+        context.Response.ContentType = "application/json";
+        if (StatusCode >= 200 && StatusCode < 300){
+            // Для успешных ответов сериализуем только Value (или весь объект, если нужно)
+            await context.Response.WriteAsJsonAsync(Value);
+        }
+        else{
+            await context.Response.WriteAsJsonAsync(new { Error = StatusMessage });
+        }
     }
 }

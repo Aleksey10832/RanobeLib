@@ -10,8 +10,11 @@ export default function GetChapter(){
     const router = useRouter()
     useEffect(() => {
         fetch(`/api/back/ranobe/${rId}/chapter/${number}`).then(el => {
+            if(el.status > 299){
+                router.push(`/ranobe/${rId}/0`)
+            }
             el.json().then(value => {
-                setChapter(value.value)
+                setChapter(value)
             })
         })
     }, [])
