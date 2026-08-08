@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
 export default function GetChapter(){
-    const [rId, number] = [useParams().ranobeId, useParams().number]
+    const [rId, number] = [useParams().ranobeId, Number(useParams().number)]
     const [chapter, setChapter] = useState<Chapter>({name: "", id: "", number: 0, ranobeId: "", paragrafs: [{text: "", number: 0, id: "", chapterId: ""}]})
     const router = useRouter()
     useEffect(() => {
@@ -27,8 +27,8 @@ export default function GetChapter(){
             return <p className="w-24/26 text-[15px] font-[literata] text-gray-400 m-auto text-left mb-4 select-none" key={p.id}>{p.text}</p>
         })}
         <div className="flex">
-            <button onClick={() => newPage(+number - 1)} className="m-auto px-10 py-3 bg-mauve-400 rounded-2xl">{"<-"}</button>
-            <button onClick={() => newPage(+number + 1)} className="m-auto px-10 py-3 bg-mauve-400 rounded-2xl">{"->"}</button>
+            <button onClick={() => newPage(number - 1)} className="m-auto px-10 py-3 bg-mauve-400 rounded-2xl">{"<-"}</button>
+            <button onClick={() => newPage(number + 1)} className="m-auto px-10 py-3 bg-mauve-400 rounded-2xl">{"->"}</button>
         </div>
     </div>)
 }

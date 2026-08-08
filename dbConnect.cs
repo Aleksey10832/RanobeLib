@@ -1,8 +1,6 @@
-using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
-using dotenv.net;
-
-
 namespace DbConnect;
 
 public class Database: DbContext
@@ -11,6 +9,8 @@ public class Database: DbContext
     public DbSet<Chapter> Chapters {get; set;}
     public DbSet<Paragraf> Paragrafs {get; set;}
     public DbSet<RanobeParser> RanobeParsers {get; set;}
+    public DbSet<User> Users {get; set;}
+    public DbSet<Session> Sessions {get; set;}
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -47,4 +47,40 @@ public class Paragraf
     public int number {get; set;}
     public string text {get; set;}
     public string chapterId {get; set;}
+}
+public class User{
+    public Guid Id {get; set;}
+    public string login {get; set;}
+    public byte[] password {get; set;}
+    private User() { }
+    public User( string login, string password ){
+        Id = Guid.NewGuid();
+        this.login = login;
+        this.password = SHA256.HashData(ASCIIEncoding.ASCII.GetBytes(password));
+    }
+    public bool checkPasword(string password){
+        byte[] sourcePassword = SHA256.HashData(ASCIIEncoding.ASCII.GetBytes(password));
+        if(sourcePassword.Length == this.password.Length)
+        {
+            int i = 0;
+            while(i < sourcePassword.Length && sourcePassword[i] == this.password[i])
+            {
+                i++;
+            }
+            if(i == sourcePassword.Length)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+public class Session{
+    public Guid Id{get; set;}
+    public Guid UserId {get; set;}
+    public string AccesToken {get; set;}
+    public string RefershToken {get; set;}
+}
+public class UserCheckChapter{
+    
 }

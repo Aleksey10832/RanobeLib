@@ -13,7 +13,7 @@ export default function RanobeAll() {
   useEffect(() => {
     fetch("/api/back/ranobe").then(response => 
       response.json()).then((value) => {
-      const ranobeR: Ranobe[] = value.value.ranobe
+      const ranobeR: Ranobe[] = value.ranobe
       setRanobeList(ranobeR);
     })
   }, []);
@@ -21,7 +21,7 @@ export default function RanobeAll() {
     <div className="flex flex-row gap-10 mx-auto w-150">
       {ranobeList.map(el => {
         return (
-          <div key={1} className="cart basis-1 cursor-pointer" onClick={() => toRanobe(el.id)}>{el.name}</div>
+          <div key={el.id} className="cart basis-1 cursor-pointer" onClick={() => toRanobe(el.id)}>{el.name}</div>
       )
       })}
     </div>

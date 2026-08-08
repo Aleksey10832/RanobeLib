@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 export default function RanobeF() {
   const [ranobeInfo, setRanobeList] = useState<Ranobe>({id: "", name: "", chapters: [], pages: 0});
-  const [ranobeId, page] = [useParams().ranobeId, useParams().page]
+  const [ranobeId, page] = [useParams().ranobeId, Number(useParams().page)]
   const router = useRouter()
   function toChapter(cId: number){
     router.push("chapter/" + cId.toString())
@@ -32,8 +32,8 @@ export default function RanobeF() {
     <div>
         <div className="text-3xl text-center pt-5 mb-1 select-none">{ranobeInfo.name}</div>
         <div className="flex mb-5">
-            <button onClick={() => newPage(+page - 1)} className="m-auto px-10 py-3 bg-mauve-400 rounded-2xl">{"<-"}</button>
-            <button onClick={() => newPage(+page + 1)} className="m-auto px-10 py-3 bg-mauve-400 rounded-2xl">{"->"}</button>
+            <button onClick={() => newPage(page - 1)} className="m-auto px-10 py-3 bg-mauve-400 rounded-2xl">{"<-"}</button>
+            <button onClick={() => newPage(page + 1)} className="m-auto px-10 py-3 bg-mauve-400 rounded-2xl">{"->"}</button>
         </div>
         <div>
           {ranobeInfo.chapters?.map(chapter => {
@@ -41,8 +41,8 @@ export default function RanobeF() {
           })}
         </div>
         <div className="flex mt-3 mb-3">
-            <button onClick={() => newPage(+page - 1)} className="m-auto px-10 py-3 bg-mauve-400 rounded-2xl">{"<-"}</button>
-            <button onClick={() => newPage(+page + 1)} className="m-auto px-10 py-3 bg-mauve-400 rounded-2xl">{"->"}</button>
+            <button onClick={() => newPage(page - 1)} className="m-auto px-10 py-3 bg-mauve-400 rounded-2xl">{"<-"}</button>
+            <button onClick={() => newPage(page + 1)} className="m-auto px-10 py-3 bg-mauve-400 rounded-2xl">{"->"}</button>
         </div>
     </div>
   );
