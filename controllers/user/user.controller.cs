@@ -2,6 +2,7 @@ using App.controller.UserModel;
 using App.Result;
 using DbConnect;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 
 namespace App.controller.UserController;
@@ -18,6 +19,7 @@ public class UserController : ControllerBase
         return Result<User>.Succesful(await database.Users.Where(us => us.login == user.login).FirstAsync());
     }
     [HttpPost("login")]
+    [TypeFilter(typeof(AdminFillter))]
     public async Task<Result<bool>> loginUser( [FromBody] UserM user)
     {
         return Result<bool>.Succesful((await database.Users.Where(us => us.login == user.login).FirstAsync()).checkPasword(user.password));
