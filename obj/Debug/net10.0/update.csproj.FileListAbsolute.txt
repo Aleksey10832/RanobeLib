@@ -179,3 +179,4 @@ C:\Users\aleks\OneDrive\Documentos\repository\ranobeLib\obj\Debug\net10.0\swae.b
 C:\Users\aleks\OneDrive\Documentos\repository\ranobeLib\bin\Debug\net10.0\frontend\package-lock.json
 C:\Users\aleks\OneDrive\Documentos\repository\ranobeLib\bin\Debug\net10.0\frontend\package.json
 C:\Users\aleks\OneDrive\Documentos\repository\ranobeLib\bin\Debug\net10.0\frontend\tsconfig.json
+C:\Users\aleks\OneDrive\Documentos\repository\ranobeLib\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

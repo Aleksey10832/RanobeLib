@@ -1,9 +1,13 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using App.controller.UserModel;
 using App.Result;
 using DbConnect;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens.Experimental;
 
 namespace App.controller.UserController;
 
@@ -19,9 +23,17 @@ public class UserController : ControllerBase
         return Result<User>.Succesful(await database.Users.Where(us => us.login == user.login).FirstAsync());
     }
     [HttpPost("login")]
-    [TypeFilter(typeof(AdminFillter))]
-    public async Task<Result<bool>> loginUser( [FromBody] UserM user)
+    public async Task<Result<string>> loginUser( [FromBody] UserM user)
     {
-        return Result<bool>.Succesful((await database.Users.Where(us => us.login == user.login).FirstAsync()).checkPasword(user.password));
+       
+        if((await database.Users.Where(us => us.login == user.login).FirstAsync()).checkPasword(user.password))
+        {
+            
+            List<Claim> claims = new () {new Claim(ClaimTypes.Role, "Admin"), new Claim(ClaimTypes.Name, user.login)};
+            JwtSecurityToken jwt = new (issuer: "MyAuthServer", audience: "MyAPIClient", claims: claims, expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(5)), signingCredentials: new SigningCredentials (new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY"))), SecurityAlgorithms.HmacSha256));
+            return Result<string>.Succesful(new JwtSecurityTokenHandler().WriteToken(jwt));
+        }
+        return Result<string>.Fail(401, "Логин или пароль не верен");
+        
     }
 }

@@ -28,6 +28,7 @@ public class RanobeController: ControllerBase
 
     [HttpGet("{page}")]
     [HttpGet("")]
+    [TypeFilter(typeof(AdminFillter))]
     public async Task<Result<RanobeP>> getAllRanobe(int page)
     {
         return Result<RanobeP>.Succesful(new RanobeP(await database.Ranobes.Where(r => r.name != null).Take(30).Skip(30 * page).ToListAsync(), await database.Ranobes.CountAsync()));
