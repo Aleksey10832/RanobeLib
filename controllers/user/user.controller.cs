@@ -16,20 +16,21 @@ public class UserController : ControllerBase
 {
     private readonly Database database = new();
     [HttpPost("create")]
-    public async Task<Result<User>> createUser( [FromBody] UserM user)
+    [TypeFilter(typeof(AdminFillter))]
+    public async Task<Result<User>> CreateUser( [FromBody] UserM user)
     {
         database.Users.Add(new User(user.login, user.password));
         await database.SaveChangesAsync();
         return Result<User>.Succesful(await database.Users.Where(us => us.login == user.login).FirstAsync());
     }
     [HttpPost("login")]
-    public async Task<Result<string>> loginUser( [FromBody] UserM user)
+    public async Task<Result<string>> LoginUser( [FromBody] UserM user)
     {
        
         if((await database.Users.Where(us => us.login == user.login).FirstAsync()).checkPasword(user.password))
         {
             
-            List<Claim> claims = new () {new Claim(ClaimTypes.Role, "Admin"), new Claim(ClaimTypes.Name, user.login)};
+            List<Claim> claims = new () {new Claim(ClaimTypes.Role, "User"), new Claim(ClaimTypes.Name, user.login)};
             JwtSecurityToken jwt = new (issuer: "MyAuthServer", audience: "MyAPIClient", claims: claims, expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(5)), signingCredentials: new SigningCredentials (new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY"))), SecurityAlgorithms.HmacSha256));
             return Result<string>.Succesful(new JwtSecurityTokenHandler().WriteToken(jwt));
         }

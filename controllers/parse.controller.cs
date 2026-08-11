@@ -11,7 +11,7 @@ public class ParseController: ControllerBase
 {
     private readonly Database database = new();
     [HttpGet]
-    public Result<ParseStatus> getParseStatus(){
+    public Result<ParseStatus> GetParseStatus(){
         Parse parse = ParsersMeneger.GetParse("123"); 
         if(parse == null)
         {
@@ -35,7 +35,7 @@ public class ParseController: ControllerBase
     }
     
     [HttpDelete("{RanobeId}")]
-    public async Task<Result<string>> deleteRanobe( string RanobeId )
+    public async Task<Result<string>> DeleteRanobe( string RanobeId )
     {
         if(await database.Ranobes.FindAsync(RanobeId) == null)
         {

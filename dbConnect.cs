@@ -52,6 +52,7 @@ public class User{
     public Guid Id {get; set;}
     public string login {get; set;}
     public byte[] password {get; set;}
+    public string Role {get; set;}
     private User() { }
     public User( string login, string password ){
         Id = Guid.NewGuid();

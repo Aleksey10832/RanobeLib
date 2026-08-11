@@ -1,7 +1,8 @@
 
 namespace App.controller.UserModel;
 public class UserM{
-    public string password {get; set;}
-    public string login {get; set;}
+    public string Password {get; set;}
+    public string Login {get; set;}
+    public string Role
     
 }

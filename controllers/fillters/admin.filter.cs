@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using App.Result;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
 
@@ -18,12 +19,19 @@ public class AdminFillter : IAsyncActionFilter
             
         };
         
-        string token = httpContext.HttpContext.Request.Headers.Authorization.ToString()[7..];
+        
         SecurityToken aboba;
-        (new JwtSecurityTokenHandler ()).ValidateToken(token, validateParams, out aboba);
-
-        await next();
-        System.Console.WriteLine(aboba.SigningKey.);
+        try{
+            if(new JwtSecurityTokenHandler ().ValidateToken(httpContext.HttpContext.Request.Headers.Authorization.ToString()[7..], validateParams, out aboba).IsInRole("Admin"))
+            {
+                await next();
+                // тут потом метрику можно будет сделать
+            }
+            httpContext.HttpContext.Response.StatusCode = 403;
+        }
+        catch{
+            httpContext.HttpContext.Response.StatusCode = 401;
+        }
     }
     
 }

@@ -12,7 +12,7 @@ public class RanobeController: ControllerBase
 {
     private readonly Database database = new();
     [HttpGet("{id}/{page}")]
-    public async Task<Result<Ranobe>> getById(string id, int page)
+    public async Task<Result<Ranobe>> GetById(string id, int page)
     {
         Ranobe? ranobe = await database.Ranobes.FindAsync(id);
         if(ranobe != null){
@@ -28,14 +28,11 @@ public class RanobeController: ControllerBase
 
     [HttpGet("{page}")]
     [HttpGet("")]
-    [TypeFilter(typeof(AdminFillter))]
-    public async Task<Result<RanobeP>> getAllRanobe(int page)
-    {
+    public async Task<Result<RanobeP>> GetAllRanobe(int page){
         return Result<RanobeP>.Succesful(new RanobeP(await database.Ranobes.Where(r => r.name != null).Take(30).Skip(30 * page).ToListAsync(), await database.Ranobes.CountAsync()));
     }
     [HttpGet("{ranobeId}/chapter/{number}")]
-    public async Task<Result<Chapter>> getChapter(string ranobeId, int number)
-    {
+    public async Task<Result<Chapter>> GetChapter(string ranobeId, int number){
         try{
             Chapter? chapter = await database.Chapters.Where(el => el.ranobeId == ranobeId).FirstAsync(el => el.number == number);
             chapter.paragrafs = await database.Paragrafs.Where(p => p.chapterId == chapter.Id).OrderBy(p => p.number).ToListAsync();
@@ -53,8 +50,7 @@ public class RanobeController: ControllerBase
     {
         public List<Ranobe> ranobe {get; set;}
         public double pages {get; set;}
-        public RanobeP(List<Ranobe> ranobe, int count)
-        {
+        public RanobeP(List<Ranobe> ranobe, int count){
             this.ranobe = ranobe;
             this.pages = Math.Round((double)count / 20, 2);
         }
