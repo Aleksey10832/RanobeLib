@@ -3,7 +3,7 @@ using App.Result;
 using DbConnect;
 using Microsoft.EntityFrameworkCore;
 
-namespace App.Controller.Main;
+namespace App.Controller.RanobeController;
 
 
 

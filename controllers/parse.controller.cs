@@ -4,7 +4,7 @@ using App.Parser;
 using DbConnect;
 using Microsoft.EntityFrameworkCore;
 
-namespace App.Controller.Parser;
+namespace App.Controller.ParseController;
 
 [Route("/parse")]
 public class ParseController: ControllerBase

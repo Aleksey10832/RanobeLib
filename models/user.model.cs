@@ -1,0 +1,8 @@
+
+namespace App.Models.UserModel;
+public interface IUserM{
+    public string Password { get; set; }
+    public string Login { get; set; }
+    public string Role { get; set; }
+    
+}
