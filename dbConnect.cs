@@ -10,7 +10,6 @@ public class Database: DbContext
     public DbSet<Paragraf> Paragrafs {get; set;}
     public DbSet<RanobeParser> RanobeParsers {get; set;}
     public DbSet<User> Users {get; set;}
-    public DbSet<Session> Sessions {get; set;}
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -53,12 +52,13 @@ public class User{
     public string Login {get; set;}
     public byte[] Password {get; set;}
     public string Role {get; set;}
-    public string RefershToken {get; set;}
+    public string? RefershToken {get; set;}
     private User() { }
-    public User( string login, string password ){
+    public User( string login, string password, string role){
         Id = Guid.NewGuid();
         this.Login = login;
         this.Password = SHA256.HashData(ASCIIEncoding.ASCII.GetBytes(password));
+        this.Role = role;
     }
     public bool checkPasword(string password){
         byte[] sourcePassword = SHA256.HashData(ASCIIEncoding.ASCII.GetBytes(password));
@@ -76,12 +76,6 @@ public class User{
         }
         return false;
     }
-}
-public class Session{
-    public Guid Id{get; set;}
-    public Guid UserId {get; set;}
-    public string AccesToken {get; set;}
-    public string RefershToken {get; set;}
 }
 public class UserCheckChapter{
     
