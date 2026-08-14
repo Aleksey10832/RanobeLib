@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using App.Models.TokensModel;
 using App.Models.UserModel;
 using App.Result;
 using DbConnect;
@@ -18,27 +19,37 @@ public class UserController : ControllerBase
     {
         database.Users.Add(new User(user.Login, user.Password));
         await database.SaveChangesAsync();
-        return Result<User>.Succesful(await database.Users.Where(us => us.login == user.Login).FirstAsync());
+        return Result<User>.Succesful(await database.Users.Where(us => us.Login == user.Login).FirstAsync());
     }
 
     [HttpPost("login")]
-    public async Task<Result<string>> LoginUser( [FromBody] IUserM user)
+    public async Task<Result<ITokensM>> LoginUser( [FromBody] IUserM user)
     {
         try{
-            User dbUser = await database.Users.Where(us => us.login == user.Login).FirstAsync();
-            if (dbUser.checkPasword(user.Password))
-            {   
-                return Result<string>.Succesful(Functions.GenerateAccessToken(user.Login, dbUser.Role));
+            User dbUser = await database.Users.Where(us => us.Login == user.Login).FirstAsync();
+            if (dbUser.checkPasword(user.Password)){
+                return await this.RefershToken(user);
             }
         } catch{
-            return Result<string>.Fail(401, "Логин или пароль не верен");
+            return Result<ITokensM>.Fail(401, "Логин или пароль не верен");
         }
-        return Result<string>.Fail(401, "Логин или пароль не верен");
+        return Result<ITokensM>.Fail(401, "Логин или пароль не верен");
     }
 
     [HttpPost("token/refersh")]
-    public async Task<Result<string>> RefershToken( [FromBody] IUserM user)
+    public async Task<Result<ITokensM>> RefershToken( [FromBody] IUserM user)
     {
-        var refreshToken = WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(32));
+        try{
+            User dbUser = await database.Users.Where(us => us.Login == user.Login).FirstAsync();
+            ITokensM tokens = new (
+                WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(32)),
+                Functions.GenerateAccessToken(user.Login, dbUser.Role)
+            );
+            return Result<ITokensM>.Succesful(tokens);
+        }
+        catch{
+            return Result<ITokensM>.Fail(401, "ДИ нахуй");
+        }
+        
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 public static class Functions
 {
-    public static string GenerateAccesToken (string login, string role)
+    public static string GenerateAccessToken (string login, string role)
     {
         JwtSecurityToken jwt = new (
             issuer: "MyAuthServer", 

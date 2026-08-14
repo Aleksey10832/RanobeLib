@@ -50,21 +50,22 @@ public class Paragraf
 }
 public class User{
     public Guid Id {get; set;}
-    public string login {get; set;}
-    public byte[] password {get; set;}
+    public string Login {get; set;}
+    public byte[] Password {get; set;}
     public string Role {get; set;}
+    public string RefershToken {get; set;}
     private User() { }
     public User( string login, string password ){
         Id = Guid.NewGuid();
-        this.login = login;
-        this.password = SHA256.HashData(ASCIIEncoding.ASCII.GetBytes(password));
+        this.Login = login;
+        this.Password = SHA256.HashData(ASCIIEncoding.ASCII.GetBytes(password));
     }
     public bool checkPasword(string password){
         byte[] sourcePassword = SHA256.HashData(ASCIIEncoding.ASCII.GetBytes(password));
-        if(sourcePassword.Length == this.password.Length)
+        if(sourcePassword.Length == this.Password.Length)
         {
             int i = 0;
-            while(i < sourcePassword.Length && sourcePassword[i] == this.password[i])
+            while(i < sourcePassword.Length && sourcePassword[i] == this.Password[i])
             {
                 i++;
             }
