@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using AngleSharp.Dom;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
 public static class Functions
@@ -13,8 +14,8 @@ public static class Functions
             claims: new List<Claim> () {
                 new Claim(ClaimTypes.Role, role), 
                 new Claim(ClaimTypes.Name, login)
-            }, 
-            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(5)), 
+            },
+            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(2)), 
             signingCredentials: new SigningCredentials (new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(
                     Environment.GetEnvironmentVariable("JWT_KEY")

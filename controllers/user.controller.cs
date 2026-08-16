@@ -15,12 +15,21 @@ public class UserController : ControllerBase
 {
     private readonly Database database = new();
     [HttpPost("create")]
-    // [TypeFilter(typeof(AdminFillter))]
+    [TypeFilter(typeof(AdminFillter))]
     public async Task<Result<User>> CreateUser( [FromBody] IUserM user)
     {
-        database.Users.Add(new User(user.Login, user.Password, user.Role));
-        await database.SaveChangesAsync();
-        return Result<User>.Succesful(await database.Users.Where(us => us.Login == user.Login).FirstAsync());
+        if(user.Role != null){
+            try{
+                database.Users.Add(new User(user.Login, user.Password, user.Role));
+                await database.SaveChangesAsync();
+                return Result<User>.Succesful(await database.Users.Where(us => us.Login == user.Login).FirstAsync());
+            } catch{
+                return Result<User>.Fail(400, "Пользователь с таким именем уже существует");
+            }
+        }
+        else{
+            return Result<User>.Fail(400, "роль не указана");
+        }
     }
 
     [HttpPost("login")]
@@ -34,6 +43,18 @@ public class UserController : ControllerBase
             return Result<TokensM>.Fail(401, "Логин или пароль не верен"); //password
         } catch{
             return Result<TokensM>.Fail(401, "Логин или пароль не верен"); //login
+        }
+    }
+
+    [HttpPost("register")]
+    public async Task<Result<TokensM>> RegisterUser( [FromBody] IUserM user)
+    {
+        try{
+            database.Users.Add(new User(user.Login, user.Password, "User"));
+            await database.SaveChangesAsync();
+            return await this.RefershToken(null, user.Login, null);
+        } catch{
+            return Result<TokensM>.Fail(401, "Данный логин уже занят, попробуйте другой"); //login
         }
     }
 

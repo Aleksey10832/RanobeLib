@@ -47,6 +47,8 @@ public class Paragraf
     public string text {get; set;}
     public string chapterId {get; set;}
 }
+
+[Index(nameof(Login), IsUnique = true)]
 public class User{
     public Guid Id {get; set;}
     public string Login {get; set;}

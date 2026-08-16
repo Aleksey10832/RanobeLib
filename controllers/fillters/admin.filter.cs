@@ -33,5 +33,4 @@ public class AdminFillter : IAsyncActionFilter
             httpContext.HttpContext.Response.StatusCode = 401;
         }
     }
-    
 }
