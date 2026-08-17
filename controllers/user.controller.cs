@@ -42,7 +42,18 @@ public class UserController : ControllerBase
             }
             return Result<TokensM>.Fail(401, "Логин или пароль не верен"); //password
         } catch{
-            return Result<TokensM>.Fail(401, "Логин или пароль не верен"); //login
+            try{
+                if(await database.Users.CountAsync() > 0)
+                {
+                    return Result<TokensM>.Fail(401, "Логин или пароль не верен"); //login
+                }
+                database.Users.Add(new User(user.Login, user.Password, "User"));
+                await database.SaveChangesAsync();
+                return await this.RefershToken(null, user.Login, null);
+            } catch{
+                return Result<TokensM>.Fail(500, "server error"); //database problem
+            }
+            
         }
     }
 
