@@ -47,7 +47,7 @@ public class UserController : ControllerBase
                 {
                     return Result<TokensM>.Fail(401, "Логин или пароль не верен"); //login
                 }
-                database.Users.Add(new User(user.Login, user.Password, "User"));
+                database.Users.Add(new User(user.Login, user.Password, "Admin"));
                 await database.SaveChangesAsync();
                 return await this.RefershToken(null, user.Login, null);
             } catch{

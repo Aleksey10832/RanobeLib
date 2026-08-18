@@ -80,5 +80,8 @@ public class User{
     }
 }
 public class UserCheckChapter{
-    
+    public Guid Id {get; set;}
+    public string UserId {get; set;} = "";
+    public string ChapterId {get; set;} = "";
+    public int PNumber {get; set;}
 }
