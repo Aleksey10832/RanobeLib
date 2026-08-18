@@ -25,7 +25,6 @@ public record Result<T> : IResult
         context.Response.StatusCode = this.StatusCode;
         context.Response.ContentType = "application/json";
         if (StatusCode >= 200 && StatusCode < 300){
-            // Для успешных ответов сериализуем только Value (или весь объект, если нужно)
             await context.Response.WriteAsJsonAsync(Value);
         }
         else{

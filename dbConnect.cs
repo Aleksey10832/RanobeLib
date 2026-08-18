@@ -10,6 +10,7 @@ public class Database: DbContext
     public DbSet<Paragraf> Paragrafs {get; set;}
     public DbSet<RanobeParser> RanobeParsers {get; set;}
     public DbSet<User> Users {get; set;}
+    public DbSet<UserCheckChapter> UserCheckChapters {get; set;}
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -81,7 +82,12 @@ public class User{
 }
 public class UserCheckChapter{
     public Guid Id {get; set;}
-    public string UserId {get; set;} = "";
+    public Guid UserId {get; set;}
     public string ChapterId {get; set;} = "";
     public int PNumber {get; set;}
+    public UserCheckChapter(Guid userId, string chapterId, int pNumber){
+        this.UserId = userId;
+        this.ChapterId = chapterId;
+        this.PNumber = pNumber;
+    }
 }
