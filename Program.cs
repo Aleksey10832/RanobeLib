@@ -1,12 +1,12 @@
-
-using System.Text;
+using DbConnect;
 using dotenv.net;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+// using Microsoft.EntityFrameworkCore;
+
 
 DotEnv.Load();
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers();
+builder.Services.AddDbContext<Database>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("NextJSPolicy", policy =>

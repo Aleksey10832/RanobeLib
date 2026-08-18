@@ -13,7 +13,8 @@ namespace App.Controller.UserController;
 [Route("user")]
 public class UserController : ControllerBase
 {
-    private readonly Database database = new();
+    private readonly Database database;
+    public UserController(Database _db) => this.database = _db;
     [HttpPost("create")]
     [TypeFilter(typeof(AdminFillter))]
     public async Task<Result<User>> CreateUser( [FromBody] IUserM user)

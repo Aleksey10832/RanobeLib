@@ -1,5 +1,4 @@
-using System.Security.Cryptography;
-using System.Text;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 namespace DbConnect;
 
@@ -53,29 +52,20 @@ public class Paragraf
 public class User{
     public Guid Id {get; set;}
     public string Login {get; set;}
-    public byte[] Password {get; set;}
+    public string Password {get; set;}
     public string Role {get; set;}
     public string? RefershToken {get; set;}
     private User() { }
     public User( string login, string password, string role){
         Id = Guid.NewGuid();
         this.Login = login;
-        this.Password = SHA256.HashData(ASCIIEncoding.ASCII.GetBytes(password));
+        this.Password = new PasswordHasher<User>().HashPassword(this, "password");
         this.Role = role;
     }
     public bool checkPasword(string password){
-        byte[] sourcePassword = SHA256.HashData(ASCIIEncoding.ASCII.GetBytes(password));
-        if(sourcePassword.Length == this.Password.Length)
-        {
-            int i = 0;
-            while(i < sourcePassword.Length && sourcePassword[i] == this.Password[i])
-            {
-                i++;
-            }
-            if(i == sourcePassword.Length)
-            {
-                return true;
-            }
+        PasswordVerificationResult passw = new PasswordHasher<User>().VerifyHashedPassword(this, this.Password,  password);
+        if((byte)passw == 1){
+            return true;
         }
         return false;
     }

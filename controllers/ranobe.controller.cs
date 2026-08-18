@@ -10,7 +10,8 @@ namespace App.Controller.RanobeController;
 [Route("/ranobe")]
 public class RanobeController: ControllerBase
 {
-    private readonly Database database = new();
+    private readonly Database database;
+    public RanobeController(Database _db) => this.database = _db;
     [HttpGet("{id}/{page}")]
     public async Task<Result<Ranobe>> GetById(string id, int page)
     {

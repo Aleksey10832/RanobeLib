@@ -10,6 +10,7 @@ namespace App.Controller.ParseController;
 public class ParseController: ControllerBase
 {
     private readonly Database database = new();
+    public ParseController(Database _db) => this.database = _db;
     [HttpGet]
     public Result<ParseStatus> GetParseStatus(){
         Parse parse = ParsersMeneger.GetParse("123"); 
