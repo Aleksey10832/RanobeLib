@@ -59,7 +59,7 @@ public class User{
     public User( string login, string password, string role){
         Id = Guid.NewGuid();
         this.Login = login;
-        this.Password = new PasswordHasher<User>().HashPassword(this, "password");
+        this.Password = new PasswordHasher<User>().HashPassword(this, password);
         this.Role = role;
     }
     public bool checkPasword(string password){
