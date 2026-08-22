@@ -4,7 +4,6 @@ using App.Models.UserModel;
 using App.Result;
 using DbConnect;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 
@@ -70,14 +69,14 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpPost("token/refersh")]
-    public async Task<Result<TokensM>> RefershToken([FromBody] TokensM? tokensM, string? login, [FromHeader(Name = "Authorization")] string? jwtToken)
+    [HttpPost("token/refersh/{refershToken}")]
+    public async Task<Result<TokensM>> RefershToken(string refershToken, string? login, [FromHeader(Name = "Authorization")] string? jwtToken)
     {
-        if(tokensM != null && jwtToken != null){
+        if(refershToken != null && jwtToken != null){
             try {
                 string? loginIsToken = Functions.GetLoginIsToken(jwtToken);
                 User dbUser = await database.Users.Where(us => us.Login == loginIsToken).FirstAsync();
-                if(dbUser.RefershToken == tokensM.RefershToken) {
+                if(dbUser.RefershToken == refershToken) {
                     TokensM tokens = new (
                         Functions.GenerateAccessToken(dbUser.Login, dbUser.Role),
                         WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(32))
@@ -86,7 +85,7 @@ public class UserController : ControllerBase
                     await database.SaveChangesAsync();
                     return Result<TokensM>.Succesful(tokens);
                 } else{
-                    Result<TokensM>.Fail(401, "Нет, отказано");
+                    Result<TokensM>.Fail(401, "Нет, отказано0");
                 }
                 
             } catch {

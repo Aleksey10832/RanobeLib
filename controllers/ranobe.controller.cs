@@ -43,28 +43,6 @@ public class RanobeController: ControllerBase
         }
         
     }
-
-    [HttpPost("check")]
-    public async Task<Result<UserCheckChapter>> SetCheckChapterStatus([FromBody] UserCheckChapterP inStatus, [FromHeader(Name = "Authorization")] string jwtToken){
-        try{
-            Chapter? chapter = await database.Chapters.FindAsync(inStatus.chapterId);
-            string? login = Functions.GetLoginIsToken(jwtToken);
-            if(login != null){
-                Guid userId = (await database.Users.FirstAsync(el => el.Login == login)).Id;
-                UserCheckChapter status = new (userId, inStatus.chapterId, inStatus.pNumber);
-                await database.UserCheckChapters.AddAsync(status);
-                await database.SaveChangesAsync();
-                return Result<UserCheckChapter>.Succesful(status);
-            }
-            return Result<UserCheckChapter>.Fail(403, "пользователя не существует");
-        } catch{
-            return Result<UserCheckChapter>.Fail(404, "Нет такой главы или пользователь неавторизирован");
-        }
-        
-    }
-
-
-
     public class RanobeP{
         public List<Ranobe> ranobe {get; set;}
         public double pages {get; set;}
@@ -72,9 +50,5 @@ public class RanobeController: ControllerBase
             this.ranobe = ranobe;
             this.pages = Math.Round((double)count / 20, 2);
         }
-    }
-    public class UserCheckChapterP{
-        public string chapterId {get; set;} = "";
-        public int pNumber {get; set;}
     }
 }

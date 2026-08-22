@@ -7,7 +7,7 @@ import req from "./utilities/request";
 
 export default function RanobeAll() {
   const [ranobeList, setRanobeList] = useState<Ranobe[]>([{id: "", name: "", pages: 0}]);
-  const [carts, setCarts] = useState<Array<ReactElement>>()
+  // const [carts, setCarts] = useState<Array<ReactElement>>()
   const router = useRouter()
   function toRanobe(rId: string){
     router.push("/ranobe/" + rId + "/0")

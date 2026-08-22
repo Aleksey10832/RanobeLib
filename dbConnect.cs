@@ -70,14 +70,21 @@ public class User{
         return false;
     }
 }
+
+[Index(nameof(CidUsId), IsUnique = true)]
 public class UserCheckChapter{
     public Guid Id {get; set;}
     public Guid UserId {get; set;}
     public string ChapterId {get; set;} = "";
     public int PNumber {get; set;}
-    public UserCheckChapter(Guid userId, string chapterId, int pNumber){
+    public string RanobeId {get; set;}
+    public string CidUsId {get; set;}
+    public UserCheckChapter(Guid userId, string chapterId, int pNumber, string ranobeId){
+        
         this.UserId = userId;
         this.ChapterId = chapterId;
         this.PNumber = pNumber;
+        this.RanobeId = ranobeId;
+        this.CidUsId = chapterId + userId;
     }
 }

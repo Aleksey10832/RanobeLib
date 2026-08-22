@@ -1,5 +1,8 @@
 "use client";
+import Chapter from "@/app/models/chapter";
 import Ranobe from "@/app/models/ranobe";
+import UserCheckChapter from "@/app/models/userCheckChapter";
+import req from "@/app/utilities/request";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -15,15 +18,25 @@ export default function RanobeF() {
     router.push(page.toString())
   }
   useEffect(() => {
-    fetch(`/api/back/ranobe/${ranobeId}/${page}`).then(response => {
+    req(`ranobe/${ranobeId}/${page}`).then((response) => {
       if(response.status > 299){
         router.back();
       }
-      response.json().then((value) => {
-        if(value.chapters.length < 1){
-          router.push("0");
+
+      if(response.chapters.length < 1){
+        router.push("0");
+      }
+      req("chapter/check/" + response.id).then((checkChapters: UserCheckChapter[]) => {
+        if(!(typeof(checkChapters) == "number")){
+          response.chapters.map((chapter: Chapter) => {
+            if(checkChapters.find(Fchapter => chapter.id == Fchapter.chapterId)){
+              chapter.isCheck = true
+            } else {
+              chapter.isCheck = false
+            }
+          })
         }
-        setRanobeList(value);
+        setRanobeList(response);
       })
     })
   }, []);
@@ -36,7 +49,8 @@ export default function RanobeF() {
         </div>
         <div>
           {ranobeInfo.chapters?.map(chapter => {
-            return <div onClick={() => toChapter(chapter.number)} className="select-none mb-1 m-auto p-2 text-center text-1xl bg-gray-700 w-7/8 rounded-sm hover:text-2xl cursor-pointer hover:transition-transform" key={chapter.id}>{chapter.name}</div>
+            console.log(chapter)
+            return <div onClick={() => toChapter(chapter.number)} className={`select-none mb-1 m-auto p-2 text-center text-1xl ${chapter.isCheck ? 'bg-gray-800 text-gray-400' : 'bg-gray-700'} w-7/8 rounded-sm hover:text-2xl cursor-pointer hover:transition-transform`} key={chapter.id}>{chapter.name}</div>
           })}
         </div>
         <div className="flex mt-3 mb-3">

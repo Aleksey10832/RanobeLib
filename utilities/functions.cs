@@ -37,8 +37,7 @@ public static class Functions
             
         };        
         try{
-            var token = new JwtSecurityTokenHandler ()
-            .ValidateToken(
+            var token = new JwtSecurityTokenHandler ().ValidateToken(
                 jwtToken[7..], 
                 validateParams, out _
             );
@@ -48,4 +47,13 @@ public static class Functions
             return null;
         }
     }
+    public static TokenValidationParameters ValidateParams = new TokenValidationParameters{
+        ValidateIssuer = true,
+        ValidIssuer = "MyAuthServer",
+        ValidateAudience = true,
+        ValidAudience = "MyAPIClient",
+        ValidateLifetime = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY"))),
+        ValidateIssuerSigningKey = true,
+    };
 }

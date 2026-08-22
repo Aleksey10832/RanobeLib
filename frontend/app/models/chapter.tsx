@@ -5,5 +5,6 @@ export default interface Chapter{
     ranobeId: string;
     name: string;
     number: number;
-    paragrafs?: Paragraf[]
+    paragrafs?: Paragraf[];
+    isCheck?: boolean;
 }
