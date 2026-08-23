@@ -9,10 +9,11 @@ import { useEffect, useState } from "react";
 
 export default function RanobeF() {
   const [ranobeInfo, setRanobeList] = useState<Ranobe>({id: "", name: "", chapters: [], pages: 0});
+  const [lastCheckChapter, setLastChapter] = useState((<></>));
   const [ranobeId, page] = [useParams().ranobeId, Number(useParams().page)]
   const router = useRouter()
-  function toChapter(cId: number){
-    router.push("chapter/" + cId.toString())
+  function toChapter(cId: number, pNumber?: number){
+    router.push("chapter/" + cId.toString() + "#" + pNumber)
   }
   function newPage(page: number){
     router.push(page.toString())
@@ -37,6 +38,14 @@ export default function RanobeF() {
           })
         }
         setRanobeList(response);
+        if(!(typeof(checkChapters) == "number")){
+          checkChapters.sort((a: UserCheckChapter, b: UserCheckChapter) =>  new Date(b.date).getTime() - new Date(a.date).getTime())
+          req("chapter/info/" + checkChapters[0].chapterId).then(chapter => {
+            setLastChapter(<button onClick={() => toChapter(chapter.number, checkChapters[0].pNumber)} className="cursor-pointer bg-mauve-400 px-5 rounded-2xl">
+              {chapter.name} / параграф - {checkChapters[0].pNumber}
+            </button>)
+          })
+        }
       })
     })
   }, []);
@@ -45,11 +54,11 @@ export default function RanobeF() {
         <div className="text-3xl text-center pt-5 mb-1 select-none">{ranobeInfo.name}</div>
         <div className="flex mb-5">
             <button onClick={() => newPage(page - 1)} className="cursor-pointer m-auto px-10 py-3 bg-mauve-400 rounded-2xl">{"<-"}</button>
+            {lastCheckChapter}
             <button onClick={() => newPage(page + 1)} className="cursor-pointer m-auto px-10 py-3 bg-mauve-400 rounded-2xl">{"->"}</button>
         </div>
         <div>
           {ranobeInfo.chapters?.map(chapter => {
-            console.log(chapter)
             return <div onClick={() => toChapter(chapter.number)} className={`select-none mb-1 m-auto p-2 text-center text-1xl ${chapter.isCheck ? 'bg-gray-800 text-gray-400' : 'bg-gray-700'} w-7/8 rounded-sm hover:text-2xl cursor-pointer hover:transition-transform`} key={chapter.id}>{chapter.name}</div>
           })}
         </div>
