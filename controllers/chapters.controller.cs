@@ -14,11 +14,17 @@ public class ChapterController: ControllerBase
     private readonly Database database;
     public ChapterController(Database _db) => this.database = _db;
 
-    [HttpGet("check/{ranobeId}")]
+    [HttpGet("check/{ranobeId}/{page}")]
     [TypeFilter(typeof(AuthFillter))]
-    public async Task<Result<List<UserCheckChapter>>> userCheck([FromHeader(Name = "Authorization")] string jwtToken){
+    public async Task<Result<List<UserCheckChapter>>> userCheck(int page, string ranobeId, [FromHeader(Name = "Authorization")] string jwtToken){
         Guid userId = (await database.Users.Where(user => user.Login == Functions.GetLoginIsToken(jwtToken)).FirstOrDefaultAsync()).Id;
-        return Result<List<UserCheckChapter>>.Succesful(database.UserCheckChapters.Where(check => check.UserId == userId).ToList());
+        int start = page * 100;
+        int stop = (page + 1) * 100;
+        List<UserCheckChapter> chapters = await database.UserCheckChapters.Where(check => check.UserId == userId && check.RanobeId == ranobeId && check.ChapterNum >= start && check.ChapterNum < stop).OrderBy(c => c.ChapterNum).Take(100).ToListAsync();
+        if(chapters.Count == 0){
+            return Result<List<UserCheckChapter>>.Fail(400, "Нихуя ты тут не читал");
+        }
+        return Result<List<UserCheckChapter>>.Succesful(chapters);
     }
 
     [HttpPost("check")]
@@ -30,7 +36,7 @@ public class ChapterController: ControllerBase
             if(login != null){
                 Guid userId = (await database.Users.FirstAsync(el => el.Login == login)).Id;
                 try {
-                    UserCheckChapter status = new (userId, inStatus.chapterId, inStatus.pNumber, (await database.Chapters.FindAsync(inStatus.chapterId)).ranobeId);
+                    UserCheckChapter status = new (userId, inStatus.chapterId, inStatus.pNumber, chapter.ranobeId, chapter.number);
                     await database.UserCheckChapters.AddAsync(status);
                     await database.SaveChangesAsync();
                     return Result<UserCheckChapter>.Succesful(status);

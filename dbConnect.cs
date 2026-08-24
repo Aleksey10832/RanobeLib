@@ -79,8 +79,9 @@ public class UserCheckChapter{
     public int PNumber {get; set;}
     public string RanobeId {get; set;}
     public string CidUsId {get; set;}
+    public int ChapterNum {get; set;}
     public DateTime Date {get; set;}
-    public UserCheckChapter(Guid userId, string chapterId, int pNumber, string ranobeId){
+    public UserCheckChapter(Guid userId, string chapterId, int pNumber, string ranobeId, int chapterNum){
         
         this.UserId = userId;
         this.ChapterId = chapterId;
@@ -88,5 +89,6 @@ public class UserCheckChapter{
         this.RanobeId = ranobeId;
         this.CidUsId = chapterId + userId;
         this.Date = DateTime.UtcNow;
+        this.ChapterNum = chapterNum;
     }
 }

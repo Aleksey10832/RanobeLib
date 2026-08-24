@@ -27,7 +27,7 @@ export default function RanobeF() {
       if(response.chapters.length < 1){
         router.push("0");
       }
-      req("chapter/check/" + response.id).then((checkChapters: UserCheckChapter[]) => {
+      req(`chapter/check/${response.id}/${page}`).then((checkChapters: UserCheckChapter[]) => {
         if(!(typeof(checkChapters) == "number")){
           response.chapters.map((chapter: Chapter) => {
             if(checkChapters.find(Fchapter => chapter.id == Fchapter.chapterId)){
