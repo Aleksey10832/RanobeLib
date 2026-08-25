@@ -17,7 +17,7 @@ export default async function req(url: string, method: string = "GET", value?: o
         } else if(response.status < 300){
             return await response.json()
         }
-        return 401
+        return response.status
     } else {
         const response = await fetch('/api/back/' + url, {method: method, headers: {"Content-Type": "application/json"}, body: JSON.stringify(value)})
         if(response.status == 401){

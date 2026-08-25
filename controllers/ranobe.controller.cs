@@ -19,6 +19,9 @@ public class RanobeController: ControllerBase
         if(ranobe != null){
             try{
                 ranobe.chapters = await database.Chapters.Where(c => c.ranobeId == id).OrderBy(c => c.number).Skip(page * 100).Take(100).ToListAsync();
+                if(ranobe.chapters.Count == 0){
+                    return Result<Ranobe>.Fail(404, "Ну блять, нету больше нихуя");
+                }
                 return Result<Ranobe>.Succesful(ranobe);
             } catch{
                 return Result<Ranobe>.Fail(400, "Ну блять, нету больше нихуя");

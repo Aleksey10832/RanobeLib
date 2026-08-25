@@ -23,8 +23,7 @@ export default function RanobeF() {
       if(response.status > 299){
         router.back();
       }
-
-      if(response.chapters.length < 1){
+      if(response >= 400){
         router.push("0");
       }
       req(`chapter/check/${response.id}/${page}`).then((checkChapters: UserCheckChapter[]) => {
@@ -38,14 +37,18 @@ export default function RanobeF() {
           })
         }
         setRanobeList(response);
-        if(!(typeof(checkChapters) == "number")){
-          checkChapters.sort((a: UserCheckChapter, b: UserCheckChapter) =>  new Date(b.date).getTime() - new Date(a.date).getTime())
-          req("chapter/info/" + checkChapters[0].chapterId).then(chapter => {
-            setLastChapter(<button onClick={() => toChapter(chapter.number, checkChapters[0].pNumber)} className="cursor-pointer bg-mauve-400 px-5 rounded-2xl">
-              {chapter.name} / параграф - {checkChapters[0].pNumber}
-            </button>)
-          })
-        }
+        req(`chapter/last/${ranobeId}`).then((chapterLast: UserCheckChapter) => {
+          if(!(typeof(chapterLast) == "number")){
+            req(`ranobe/${ranobeId}/chapter/${chapterLast.chapterNum}`).then((value: Chapter) => {
+              if(!(typeof(value) == "number")){
+                setLastChapter(
+                  <button onClick={() => toChapter(value.number, chapterLast.pNumber)} className="cursor-pointer bg-mauve-400 px-5 rounded-2xl">
+                    {value.name} / параграф - {chapterLast.pNumber}
+                  </button>)
+              }
+            })
+          }
+        })
       })
     })
   }, []);

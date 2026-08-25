@@ -27,6 +27,17 @@ public class ChapterController: ControllerBase
         return Result<List<UserCheckChapter>>.Succesful(chapters);
     }
 
+    [HttpGet("last/{ranobeId}")]
+    [TypeFilter(typeof(AuthFillter))]
+    public async Task<Result<UserCheckChapter>> userCheckLast(string ranobeId, [FromHeader(Name = "Authorization")] string jwtToken){
+        Guid userId = (await database.Users.Where(user => user.Login == Functions.GetLoginIsToken(jwtToken)).FirstOrDefaultAsync()).Id;
+        UserCheckChapter chapter = await database.UserCheckChapters.Where(check => check.UserId == userId && check.RanobeId == ranobeId).OrderByDescending(c => c.Date).FirstAsync();
+        if(chapter == null){
+            return Result<UserCheckChapter>.Fail(400, "Нихуя ты тут не читал");
+        }
+        return Result<UserCheckChapter>.Succesful(chapter);
+    }
+
     [HttpPost("check")]
     [TypeFilter(typeof(AuthFillter))]
     public async Task<Result<UserCheckChapter>> SetCheckChapterStatus([FromBody] UserCheckChapterP inStatus, [FromHeader(Name = "Authorization")] string jwtToken){

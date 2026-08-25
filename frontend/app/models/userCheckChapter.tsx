@@ -5,6 +5,7 @@ export default interface UserCheckChapter{
     userId: string;
     chapterId: string;
     pNumber: number;
-    ranobeId: boolean;
+    ranobeId: string;
     date: string;
+    chapterNum: number;
 }
