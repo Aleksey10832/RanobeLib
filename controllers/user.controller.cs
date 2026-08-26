@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using App.Controller.Filter.AuthFillter;
 using App.Models.TokensModel;
 using App.Models.UserModel;
 using App.Result;
@@ -103,4 +104,19 @@ public class UserController : ControllerBase
         }
         return Result<TokensM>.Fail(401, "Нет, отказано");
     }
+
+    [HttpGet("profile")]
+    [TypeFilter(typeof(AuthFillter))]
+    public async Task<Result<ProfileM>> GetProfile([FromHeader(Name = "Authorization")] string jwtToken)
+    {
+        try{
+            User user = await database.Users.FirstAsync(user => user.Login == Functions.GetLoginIsToken(jwtToken));
+            return Result<ProfileM>.Succesful(new ProfileM(user.Id, user.Role, user.Name));
+        }
+        catch{
+            return Result<ProfileM>.Fail(401, "Аккаунт не найден");
+        }
+    }
+
+    
 }

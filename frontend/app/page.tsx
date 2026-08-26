@@ -1,7 +1,7 @@
 'use client';
 import { useRouter } from "next/navigation";
 import Ranobe from "./models/ranobe";
-import { ReactElement, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import req from "./utilities/request";
 
 
