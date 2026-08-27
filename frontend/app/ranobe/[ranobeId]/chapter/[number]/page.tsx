@@ -1,6 +1,7 @@
 "use client"
 
 import Chapter from "@/app/models/chapter"
+import UserCheckChapter from "@/app/models/userCheckChapter"
 import req from "@/app/utilities/request"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -10,18 +11,26 @@ export default function GetChapter(){
     const [chapter, setChapter] = useState<Chapter>({name: "", id: "", number: 0, ranobeId: "", paragrafs: [{text: "", number: 0, id: "", chapterId: ""}]})
     const router = useRouter()
     useEffect(() => {
-        req(`ranobe/${rId}/chapter/${number}`).then(el => {
-            if(el.status > 299){
+        req(`ranobe/${rId}/chapter/${number}`).then((el: Chapter) => {
+            if(el.status && el.status > 299){
                 router.push(`/ranobe/${rId}/0`)
             }
             setChapter(el)
-            setTimeout(() => {
-                const scrToEl = document.getElementById(window.location.hash.toString().split("#")[1])
-                if(scrToEl){
-                    scrToEl.scrollIntoView({behavior: "smooth"})
+            req(`chapter/checkstatus/${el.id}`).then((checkStatus: UserCheckChapter) =>{
+                console.log(el.id)
+                if(typeof(checkStatus) != "number"){
+                    setTimeout(() => {
+                        const scrToEl = document.getElementById(checkStatus.pNumber.toString())
+                        if(scrToEl){
+                            scrToEl.scrollIntoView({behavior: "smooth"})
+                        }
+                        req("chapter/check", "PUT", {chapterId: checkStatus.chapterId, pNumber: checkStatus.pNumber})
+                    }, 100)
+                } else{
+                    req("chapter/check", "POST", {chapterId: el.id, pNumber: 0})
                 }
-            }, 100)
-            req("chapter/check", "POST", {chapterId: el.id, pNumber: 0})
+            })
+            
         })
     }, [])
     function newPage(page: number){

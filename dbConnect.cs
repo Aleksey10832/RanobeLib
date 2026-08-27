@@ -57,11 +57,12 @@ public class User{
     public string Role {get; set;}
     public string? RefershToken {get; set;}
     private User() { }
-    public User( string login, string password, string role){
+    public User( string login, string password, string role, string name){
         Id = Guid.NewGuid();
         this.Login = login;
         this.Password = new PasswordHasher<User>().HashPassword(this, password);
         this.Role = role;
+        this.Name = name;
     }
     public bool checkPasword(string password){
         PasswordVerificationResult passw = new PasswordHasher<User>().VerifyHashedPassword(this, this.Password,  password);
@@ -83,7 +84,6 @@ public class UserCheckChapter{
     public int ChapterNum {get; set;}
     public DateTime Date {get; set;}
     public UserCheckChapter(Guid userId, string chapterId, int pNumber, string ranobeId, int chapterNum){
-        
         this.UserId = userId;
         this.ChapterId = chapterId;
         this.PNumber = pNumber;

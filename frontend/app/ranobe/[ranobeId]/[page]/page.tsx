@@ -13,7 +13,7 @@ export default function RanobeF() {
   const [ranobeId, page] = [useParams().ranobeId, Number(useParams().page)]
   const router = useRouter()
   function toChapter(cId: number, pNumber?: number){
-    router.push("chapter/" + cId.toString() + "#" + pNumber)
+    router.push("chapter/" + cId.toString())
   }
   function newPage(page: number){
     router.push(page.toString())

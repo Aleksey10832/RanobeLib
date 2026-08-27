@@ -14,14 +14,15 @@ export default function Header (){
                 href: "/auth/login"
             }
         ]
-        if(localStorage.getItem("accessToken")){
-            req("user/profile").then(profile =>{
+        req("user/profile").then(profile =>{
+            if(typeof(profile) != "number"){
                 if(profile.role == "Admin"){
                     Tlinks.push({name: "Админ панель", href: "admin"})
                 }
-                setLinks(Tlinks)
-            })
-        }
+            }
+            setLinks(Tlinks)
+        })
+        
     }, [])
     
     return (

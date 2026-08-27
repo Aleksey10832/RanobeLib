@@ -21,7 +21,7 @@ public class UserController : ControllerBase
     {
         if(user.Role != null){
             try{
-                database.Users.Add(new User(user.Login, user.Password, user.Role));
+                database.Users.Add(new User(user.Login, user.Password, user.Role, "name"));
                 await database.SaveChangesAsync();
                 return Result<User>.Succesful(await database.Users.Where(us => us.Login == user.Login).FirstAsync());
             } catch{
@@ -48,11 +48,11 @@ public class UserController : ControllerBase
                 {
                     return Result<TokensM>.Fail(401, "Логин или пароль не верен"); //login
                 }
-                database.Users.Add(new User(user.Login, user.Password, "Admin"));
+                database.Users.Add(new User(user.Login, user.Password, "Admin", "name"));
                 await database.SaveChangesAsync();
                 return await this.RefershToken(null, user.Login, null);
             } catch{
-                return Result<TokensM>.Fail(500, "server error"); //database problem
+                return Result<TokensM>.Fail(500, "server error");
             }
             
         }
@@ -62,7 +62,7 @@ public class UserController : ControllerBase
     public async Task<Result<TokensM>> RegisterUser( [FromBody] IUserM user)
     {
         try{
-            database.Users.Add(new User(user.Login, user.Password, "User"));
+            database.Users.Add(new User(user.Login, user.Password, "User", "name"));
             await database.SaveChangesAsync();
             return await this.RefershToken(null, user.Login, null);
         } catch{

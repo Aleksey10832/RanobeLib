@@ -7,4 +7,5 @@ export default interface Chapter{
     number: number;
     paragrafs?: Paragraf[];
     isCheck?: boolean;
+    status?: number;
 }
