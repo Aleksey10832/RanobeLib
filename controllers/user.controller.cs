@@ -1,11 +1,9 @@
-using System.Security.Cryptography;
 using App.Controller.Filter.AuthFillter;
 using App.Models.TokensModel;
 using App.Models.UserModel;
 using App.Result;
 using DbConnect;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace App.Controller.UserController;
@@ -34,12 +32,12 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<Result<TokensM>> LoginUser( [FromBody] IUserM user)
+    public async Task<Result<TokensM>> LoginUser( [FromBody] IUserM user, [FromHeader(Name = "User-Agent")] string userAgent)
     {
         try{
             User dbUser = await database.Users.Where(us => us.Login == user.Login).FirstAsync();
             if (dbUser.checkPasword(user.Password)){
-                return await this.RefershToken(null, user.Login, null);
+                return await this.RefershToken(null, user.Login, null, userAgent);
             }
             return Result<TokensM>.Fail(401, "Логин или пароль не верен"); //password
         } catch{
@@ -50,7 +48,7 @@ public class UserController : ControllerBase
                 }
                 database.Users.Add(new User(user.Login, user.Password, "Admin", "name"));
                 await database.SaveChangesAsync();
-                return await this.RefershToken(null, user.Login, null);
+                return await this.RefershToken(null, user.Login, null, userAgent);
             } catch{
                 return Result<TokensM>.Fail(500, "server error");
             }
@@ -59,32 +57,41 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<Result<TokensM>> RegisterUser( [FromBody] IUserM user)
+    public async Task<Result<TokensM>> RegisterUser( [FromBody] IUserM user, [FromHeader(Name = "User-Agent")] string userAgent)
     {
         try{
             database.Users.Add(new User(user.Login, user.Password, "User", "name"));
             await database.SaveChangesAsync();
-            return await this.RefershToken(null, user.Login, null);
+            return await this.RefershToken(null, user.Login, null, userAgent);
         } catch{
             return Result<TokensM>.Fail(401, "Данный логин уже занят, попробуйте другой"); //login
         }
     }
 
     [HttpPost("token/refersh/{refershToken}")]
-    public async Task<Result<TokensM>> RefershToken(string refershToken, string? login, [FromHeader(Name = "Authorization")] string? jwtToken)
+    public async Task<Result<TokensM>> RefershToken(string refershToken, string? login, [FromHeader(Name = "Authorization")] string? jwtToken, string? userAgent)
     {
         if(refershToken != null && jwtToken != null){
             try {
-                string? loginIsToken = Functions.GetLoginIsToken(jwtToken);
-                User dbUser = await database.Users.Where(us => us.Login == loginIsToken).FirstAsync();
-                if(dbUser.RefershToken == refershToken) {
-                    TokensM tokens = new (
-                        Functions.GenerateAccessToken(dbUser.Login, dbUser.Role),
-                        WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(32))
-                    );
-                    dbUser.RefershToken = tokens.RefershToken;
-                    await database.SaveChangesAsync();
-                    return Result<TokensM>.Succesful(tokens);
+                string? SessionIdIsToken = Functions.GetSessionIdIsToken(jwtToken);
+                UserSession? session = await database.UserSessions.FindAsync(Guid.Parse(SessionIdIsToken));
+                
+                if(session != null){
+                    User? dbUser = await database.Users.FindAsync(session.UserId);
+                    if(dbUser != null){
+                        string? newRefToken = session.UpdateRefToken(refershToken);
+                        if(newRefToken != null) {
+                            TokensM tokens = new (
+                                Functions.GenerateAccessToken(dbUser.Login, dbUser.Role, session.Id),
+                                newRefToken
+                            );
+                            session.RefershToken = tokens.RefershToken;
+                            await database.SaveChangesAsync();
+                            return Result<TokensM>.Succesful(tokens);
+                        }
+                    } else {
+                        Result<TokensM>.Fail(401, "Нет, отказано0");
+                    }
                 } else{
                     Result<TokensM>.Fail(401, "Нет, отказано0");
                 }
@@ -93,14 +100,19 @@ public class UserController : ControllerBase
                 Result<TokensM>.Fail(401, "Нет, отказано");
             }
         } else if (login != null){
-            User dbUser = await database.Users.Where(us => us.Login == login).FirstAsync();
-            TokensM tokens = new (
-                Functions.GenerateAccessToken(dbUser.Login, dbUser.Role),
-                WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(32))
-            );
-            dbUser.RefershToken = tokens.RefershToken;
-            await database.SaveChangesAsync();
-            return Result<TokensM>.Succesful(tokens);
+            User? dbUser = await database.Users.SingleOrDefaultAsync(us => us.Login == login);
+            
+            if(dbUser != null && userAgent != null){
+                UserSession session = new(dbUser.Id, dbUser.Login, dbUser.Role, userAgent);
+                TokensM tokens = new (
+                    Functions.GenerateAccessToken(dbUser.Login, dbUser.Role, session.Id),
+                    session.SetRefToken()
+                );
+                await database.UserSessions.AddAsync(session);
+                await database.SaveChangesAsync();
+                return Result<TokensM>.Succesful(tokens);
+            }
+            return Result<TokensM>.Fail(401, "Нет, отказано");
         }
         return Result<TokensM>.Fail(401, "Нет, отказано");
     }

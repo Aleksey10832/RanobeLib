@@ -1,4 +1,6 @@
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 namespace DbConnect;
 
@@ -10,6 +12,7 @@ public class Database: DbContext
     public DbSet<RanobeParser> RanobeParsers {get; set;}
     public DbSet<User> Users {get; set;}
     public DbSet<UserCheckChapter> UserCheckChapters {get; set;}
+    public DbSet<UserSession> UserSessions {get; set;}
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -55,7 +58,6 @@ public class User{
     public string Name {get; set;}
     public string Password {get; set;}
     public string Role {get; set;}
-    public string? RefershToken {get; set;}
     private User() { }
     public User( string login, string password, string role, string name){
         Id = Guid.NewGuid();
@@ -65,8 +67,7 @@ public class User{
         this.Name = name;
     }
     public bool checkPasword(string password){
-        PasswordVerificationResult passw = new PasswordHasher<User>().VerifyHashedPassword(this, this.Password,  password);
-        if((byte)passw == 1){
+        if((byte)new PasswordHasher<User>().VerifyHashedPassword(this, this.Password,  password) == 1){
             return true;
         }
         return false;
@@ -92,4 +93,35 @@ public class UserCheckChapter{
         this.Date = DateTime.UtcNow;
         this.ChapterNum = chapterNum;
     }
+}
+
+public class UserSession{
+    public Guid Id {get; set;}
+    public string? RefershToken {get; set;}
+    public string UserLogin {get; set;}
+    public string UserRole {get; set;}
+    public string SessionName {get; set;}
+    public Guid UserId {get; set;}
+    public UserSession(Guid UserId, string UserLogin, string UserRole, string SessionName)
+    {
+        this.Id = Guid.NewGuid();
+        this.UserLogin = UserLogin;
+        this.UserRole = UserRole;
+        this.UserId = UserId;
+        this.SessionName = SessionName;
+    }
+    public string SetRefToken()
+    {
+        string refToken = WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(32));
+        this.RefershToken = new PasswordHasher<UserSession>().HashPassword(this, refToken);
+        return refToken;
+    }
+    public string? UpdateRefToken(string RefershToken){
+        if((byte)new PasswordHasher<UserSession>().VerifyHashedPassword(this, this.RefershToken,  RefershToken) == 1){
+            string StringRefToken = WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(32));
+            this.RefershToken = new PasswordHasher<UserSession>().HashPassword(this, StringRefToken);
+            return StringRefToken;
+        }
+        return null;
+    } 
 }
