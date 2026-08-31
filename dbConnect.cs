@@ -13,6 +13,7 @@ public class Database: DbContext
     public DbSet<User> Users {get; set;}
     public DbSet<UserCheckChapter> UserCheckChapters {get; set;}
     public DbSet<UserSession> UserSessions {get; set;}
+    public DbSet<Role> Roles {get; set;}
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

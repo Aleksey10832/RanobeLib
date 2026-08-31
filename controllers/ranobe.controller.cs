@@ -3,6 +3,7 @@ using App.Result;
 using DbConnect;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using App.Controller.Filter.AuthFillter;
 
 namespace App.Controller.RanobeController;
 
@@ -12,7 +13,9 @@ namespace App.Controller.RanobeController;
 public class RanobeController: ControllerBase
 {
     private readonly Database database;
-    public RanobeController(Database _db) => this.database = _db;
+    public RanobeController(Database _db) {
+        this.database = _db;
+    }
     [HttpGet("{id}/{page}")]
     public async Task<Result<Ranobe>> GetById(string id, int page)
     {
@@ -32,6 +35,7 @@ public class RanobeController: ControllerBase
     }
 
     [HttpGet("{page}")]
+    [TypeFilter(typeof(AuthFillter), Arguments = ["rule34"])]
     public async Task<Result<RanobeP>> GetAllRanobe(int page){
         return Result<RanobeP>.Succesful(new RanobeP(await database.Ranobes.Where(r => r.name != null).Take(30).Skip(30 * page).ToListAsync(), await database.Ranobes.CountAsync()));
     }

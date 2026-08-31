@@ -17,6 +17,10 @@ builder.Services.AddCors(options =>
     });
 });
 builder.Services.AddControllers();
+builder.Services.AddStackExchangeRedisCache(options => {
+    options.Configuration = Environment.GetEnvironmentVariable("REDIS_CONNECTION");
+    options.InstanceName = "RanobeLib";
+});
 var app = builder.Build();
 app.UseRouting();
 app.UseCors("NextJSPolicy");
