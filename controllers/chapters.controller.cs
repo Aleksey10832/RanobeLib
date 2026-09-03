@@ -16,7 +16,7 @@ public class ChapterController: ControllerBase
     public ChapterController(Database _db) => this.database = _db;
 
     [HttpGet("check/{ranobeId}/{page}")]
-    [TypeFilter(typeof(AuthFillter))]
+    [TypeFilter(typeof(AuthFillter), Arguments = ["read"])]
     public async Task<Result<List<UserCheckChapter>>> userCheck(int page, string ranobeId, [FromHeader(Name = "Authorization")] string jwtToken){
         Guid userId = (await database.Users.Where(user => user.Login == Functions.GetLoginIsToken(jwtToken)).FirstOrDefaultAsync()).Id;
         int start = page * 100;
@@ -29,7 +29,7 @@ public class ChapterController: ControllerBase
     }
 
     [HttpGet("last/{ranobeId}")]
-    [TypeFilter(typeof(AuthFillter))]
+    [TypeFilter(typeof(AuthFillter), Arguments = ["read"])]
     public async Task<Result<UserCheckChapter>> userCheckLast(string ranobeId, [FromHeader(Name = "Authorization")] string jwtToken){
         User user = await database.Users.Where(user => user.Login == Functions.GetLoginIsToken(jwtToken)).FirstOrDefaultAsync();
         if(user == null)
@@ -46,7 +46,7 @@ public class ChapterController: ControllerBase
     }
 
     [HttpPost("check")]
-    [TypeFilter(typeof(AuthFillter))]
+    [TypeFilter(typeof(AuthFillter), Arguments = ["read"])]
     public async Task<Result<UserCheckChapter>> SetCheckChapterStatus([FromBody] UserCheckChapterP inStatus, [FromHeader(Name = "Authorization")] string jwtToken){
         try{
             Chapter? chapter = await database.Chapters.FindAsync(inStatus.chapterId);
@@ -69,7 +69,7 @@ public class ChapterController: ControllerBase
     }
 
     [HttpPut("check")]
-    [TypeFilter(typeof(AuthFillter))]
+    [TypeFilter(typeof(AuthFillter), Arguments = ["read"])]
     public async Task<Result<UserCheckChapter>> UpdateCheckChapterStatus([FromBody] UserCheckChapterP inStatus, [FromHeader(Name = "Authorization")] string jwtToken){
         Chapter? chapter = await database.Chapters.FindAsync(inStatus.chapterId);
         string? login = Functions.GetLoginIsToken(jwtToken);
@@ -98,7 +98,7 @@ public class ChapterController: ControllerBase
     }
 
     [HttpGet("checkstatus/{chapterId}")]
-    [TypeFilter(typeof(AuthFillter))]
+    [TypeFilter(typeof(AuthFillter), Arguments = ["read"])]
     public async Task<Result<UserCheckChapter>> UserGetCheckChapterStatus(string chapterId, [FromHeader(Name = "Authorization")] string jwtToken){
         User? user = await database.Users.Where(user => user.Login == Functions.GetLoginIsToken(jwtToken)).FirstOrDefaultAsync();
         if(user != null){

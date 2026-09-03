@@ -118,7 +118,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("profile")]
-    [TypeFilter(typeof(AuthFillter))]
+    [TypeFilter(typeof(AuthFillter), Arguments = ["profile"])]
     public async Task<Result<ProfileM>> GetProfile([FromHeader(Name = "Authorization")] string jwtToken)
     {
         try{

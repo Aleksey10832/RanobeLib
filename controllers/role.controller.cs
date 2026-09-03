@@ -16,13 +16,9 @@ public class RanobeController: ControllerBase{
     [HttpPost("set")]
     [TypeFilter(typeof(AdminFillter))]
     public async Task<Result<Role>> SetRole([FromBody] Role role){
-        // try{
-            await cache.SetStringAsync(role.Name, JsonSerializer.Serialize(role));
-            database.Roles.Add(role);
-            await database.SaveChangesAsync();
-            return Result<Role>.Succesful(JsonSerializer.Deserialize<Role>(await cache.GetStringAsync(role.Name)));
-        // } catch {
-        //     return Result<Role>.Fail(400, "Роль уже существует");
-        // }        
+        await cache.SetStringAsync(role.Name, JsonSerializer.Serialize(role));
+        database.Roles.Add(role);
+        await database.SaveChangesAsync();
+        return Result<Role>.Succesful(JsonSerializer.Deserialize<Role>(await cache.GetStringAsync(role.Name))); 
     }
 }

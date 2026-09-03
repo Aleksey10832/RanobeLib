@@ -12,7 +12,7 @@ export default async function req(url: string, method: string = "GET", value?: o
                 const tokens = await refTokens.json()
                 localStorage.setItem("refershToken", tokens.refershToken)
                 localStorage.setItem("accessToken", tokens.accessToken)
-                req(url, method, value)
+                return await req(url, method, value)
             }
         } else if(response.status < 300){
             return await response.json()
