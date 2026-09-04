@@ -1,6 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using App.Models.TokensModel;
+using App.Result;
+using DbConnect;
 using Microsoft.IdentityModel.Tokens;
 public static class Functions
 {
@@ -14,7 +17,7 @@ public static class Functions
                 new Claim(ClaimTypes.Name, login),
                 new Claim(ClaimTypes.Sid, sessionId.ToString())
             },
-            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(2)), 
+            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(1)), 
             signingCredentials: new SigningCredentials (new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(
                     Environment.GetEnvironmentVariable("JWT_KEY")
@@ -86,4 +89,5 @@ public static class Functions
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY"))),
         ValidateIssuerSigningKey = true,
     };
+
 }

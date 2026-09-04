@@ -1,3 +1,4 @@
+using App.Services.SessionService;
 using DbConnect;
 using dotenv.net;
 // using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ builder.Services.AddCors(options =>
     });
 });
 builder.Services.AddControllers();
+builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddStackExchangeRedisCache(options => {
     options.Configuration = Environment.GetEnvironmentVariable("REDIS_CONNECTION");
     options.InstanceName = "RanobeLib";

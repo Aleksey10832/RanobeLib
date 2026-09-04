@@ -19,7 +19,6 @@ public class AuthFillter : IAsyncActionFilter
             string token = httpContext.HttpContext.Request.Headers.Authorization.ToString();
             new JwtSecurityTokenHandler ().ValidateToken(token[7..], Functions.ValidateParams, out _);
             string? StringRole = await cache.GetStringAsync(Functions.GetRoleIsToken(token));
-            Console.WriteLine(rule);
             if(StringRole != null) {
                 Role? role = JsonSerializer.Deserialize<Role>(StringRole);
                 if(role != null){
