@@ -13,7 +13,7 @@ export default function RanobeAll() {
     router.push("/ranobe/" + rId + "/0")
   }
   useEffect(() => {
-    req("ranobe/0").then(response => {
+    req("ranobe/0", undefined, undefined, router).then(response => {
       if(response == 401){
         router.replace('auth/login')
       } else {

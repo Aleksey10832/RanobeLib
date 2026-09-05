@@ -3,6 +3,7 @@ import Link from "next/link";
 import { JSX, useEffect, useState } from "react";
 import req from "./utilities/request";
 
+
 export default function Header (){
     const [links, setLinks] = useState<JSX.Element[]>([])
     useEffect(() => {

@@ -1,18 +1,21 @@
 'use client'
-export default async function req(url: string, method: string = "GET", value?: object){
-    const accToken = localStorage.getItem("accessToken");
+import { get, set, del } from "idb-keyval";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+
+export default async function req(url: string, method: string = "GET", value?: object, router?: AppRouterInstance){
+    const accToken = await get("accessToken");
     if(accToken){
         const headers = {"Authorization": "Bearer " + accToken, "Content-Type": "application/json"};
         const response = await fetch('/api/back/' + url, {method: method, headers: headers, body: JSON.stringify(value)})
         if(response.status == 401){
-            const confirmToken = localStorage.getItem("confirmToken")
+            const confirmToken = await get("confirmToken")
             if(confirmToken){
                 const confTokenStatus = (await fetch("/api/back/session/confirm/" + confirmToken, {method: "POST", headers: headers})).status
                 if(confTokenStatus == 200){
-                    localStorage.removeItem("confirmToken")
+                    await del("confirmToken")
                     return await req(url, method, value)
                 } else if(confTokenStatus == 401){
-                    localStorage.removeItem("confirmToken")
+                    await del("confirmToken")
                 } else {
                     return 500
                 }
@@ -25,10 +28,27 @@ export default async function req(url: string, method: string = "GET", value?: o
             }
         } else if(response.status < 300){
             return await response.json()
+        } else if(response.status == 500){
+            if(router){
+                router.replace("500")
+            }
+            return response.status
+        } else {
+            return response.status
         }
-        return await req(url, method, value)
+        // return await req(url, method, value)
     } else {
+        if (typeof window !== 'undefined' && navigator.storage) {
+            try {
+                if (!await navigator.storage.persisted()) {
+                    await navigator.storage.persist();
+                }
+            } catch (e) {
+                console.warn("Storage Manager API error:", e);
+            }
+        }
         const response = await fetch('/api/back/' + url, {method: method, headers: {"Content-Type": "application/json"}, body: JSON.stringify(value)})
+        console.log(value)
         if(response.status == 401){
             return 401
         }
@@ -42,22 +62,23 @@ async function refershToken() {
     }
     refershPromise = (async () => {
         try{
-            const headers = {"Authorization": "Bearer " + localStorage.getItem("accessToken"), "Content-Type": "application/json"};
-            const refTokens = await fetch('/api/back/session/refersh/' + localStorage.getItem("refershToken"), {method: "POST", headers: headers})
+            const headers = {"Authorization": "Bearer " + await get("accessToken"), "Content-Type": "application/json"};
+            const refTokens = await fetch('/api/back/session/refersh/' + await get("refershToken"), {method: "POST", headers: headers})
             if(refTokens.status == 401){
-                localStorage.clear()
+                await del("refershToken")
+                await del("accessToken")
                 return false
             } else{
                 const tokens = await refTokens.json()
-                localStorage.setItem("refershToken", tokens.refershToken)
-                localStorage.setItem("accessToken", tokens.accessToken)
-                localStorage.setItem("confirmToken", tokens.confirmToken)
+                await set("refershToken", tokens.refershToken)
+                await set("accessToken", tokens.accessToken)
+                await set("confirmToken", tokens.confirmToken)
                 console.log(tokens)
                 const conTokenRespons = await fetch("/api/back/session/confirm/" + tokens.confirmToken, {method: "POST", headers: headers})
                 if(!conTokenRespons.ok){
                     return false
                 }
-                localStorage.removeItem("confirmToken")
+                await del("confirmToken")
                 return true
             }
         } catch {

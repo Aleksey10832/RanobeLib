@@ -16,9 +16,9 @@ public class RanobeController: ControllerBase{
     [HttpPost("set")]
     [TypeFilter(typeof(AdminFillter))]
     public async Task<Result<Role>> SetRole([FromBody] Role role){
-        await cache.SetStringAsync(role.Name, JsonSerializer.Serialize(role));
+        await cache.SetStringAsync("Role" + role.Name, JsonSerializer.Serialize(role));
         database.Roles.Add(role);
         await database.SaveChangesAsync();
-        return Result<Role>.Succesful(JsonSerializer.Deserialize<Role>(await cache.GetStringAsync(role.Name))); 
+        return Result<Role>.Succesful(JsonSerializer.Deserialize<Role>(await cache.GetStringAsync("Role" + role.Name))); 
     }
 }

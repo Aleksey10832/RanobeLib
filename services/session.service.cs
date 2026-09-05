@@ -76,7 +76,6 @@ public class SessionService : ISessionService {
                 UserSession? session = await database.UserSessions.FindAsync(Guid.Parse(sessionId));
                 if(session != null){
                     session.RefershToken = new PasswordHasher<UserSession>().HashPassword(session, tokens.RefershToken);
-                    System.Console.WriteLine(tokens.RefershToken);
                     await database.SaveChangesAsync();
                     return Result<string>.Succesful("Successfully Update Tokens");
                 }

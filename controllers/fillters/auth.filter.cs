@@ -15,7 +15,6 @@ public class AuthFillter : IAsyncActionFilter
     public async Task OnActionExecutionAsync( ActionExecutingContext httpContext, ActionExecutionDelegate next)
     {
         try {
-            
             string token = httpContext.HttpContext.Request.Headers.Authorization.ToString();
             new JwtSecurityTokenHandler ().ValidateToken(token[7..], Functions.ValidateParams, out _);
             string? StringRole = await cache.GetStringAsync(Functions.GetRoleIsToken(token));
@@ -31,6 +30,17 @@ public class AuthFillter : IAsyncActionFilter
             }
             httpContext.HttpContext.Response.StatusCode = 403;
         } catch {
+            string? notAuthRole = await cache.GetStringAsync("RoleNotAuth");
+            if(notAuthRole != null){
+                Role? role = JsonSerializer.Deserialize<Role>(notAuthRole);
+                if(role != null){
+                    foreach(string roleRule in role.Rules){
+                        if(roleRule == this.rule){
+                            await next();
+                        }
+                    }
+                }
+            }
             httpContext.HttpContext.Response.StatusCode = 401;
         }
     }

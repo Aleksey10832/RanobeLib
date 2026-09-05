@@ -1,6 +1,7 @@
 'use client'
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { get, set } from "idb-keyval";
 import "../auth.css"
 import req from "@/app/utilities/request";
 
@@ -9,15 +10,28 @@ export default function Login(){
     const [password, setPassword] = useState("");
     const [errorMessage, setErrMessage] = useState("")
     const router = useRouter()
+    const loginRef = useRef(null)
+    const passwordRef = useRef(null)
+    useEffect(() => {
+        get("accessToken").then(value => {
+            if(value){
+                router.replace("/")
+            }
+        })
+    }, [])
     async function logUser() {
+        if(typeof(loginRef) == "string" && typeof(passwordRef) == "string" ){
+            setLogin(loginRef);
+            setPassword(passwordRef);
+        }
         
         const tokens = await req('user/login', 'POST', {
                     login: login, 
                     password: password
-                })
+                }, router)
         if(tokens != 401){
-            localStorage.setItem("refershToken", tokens.refershToken)
-            localStorage.setItem("accessToken", tokens.accessToken)
+            await set("refershToken", tokens.refershToken)
+            await set("accessToken", tokens.accessToken)
             router.push('/')
         } else{
             setErrMessage("Логин или пароль не верен")
@@ -25,8 +39,8 @@ export default function Login(){
     }
     return (
         <section>
-            <input type="text" onChange={(e) => setLogin(e.target.value)} placeholder="Логин" />
-            <input type="password"  onChange={(e) => setPassword(e.target.value)} placeholder="Пароль" />
+            <input ref={loginRef} autoComplete="username" type="text" onChange={(e) => setLogin(e.target.value)} placeholder="Логин" />
+            <input ref={passwordRef} autoComplete="current-password" type="password"  onChange={(e) => setPassword(e.target.value)} placeholder="Пароль" />
             <button onClick={logUser}>Вход</button>
             <div className="bg-red-400 w-1/3 text-center error-message">{errorMessage}</div>
         </section>
