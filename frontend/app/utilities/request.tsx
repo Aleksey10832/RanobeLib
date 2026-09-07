@@ -13,7 +13,7 @@ export default async function req(url: string, method: string = "GET", value?: o
                 const confTokenStatus = (await fetch("/api/back/session/confirm/" + confirmToken, {method: "POST", headers: headers})).status
                 if(confTokenStatus == 200){
                     await del("confirmToken")
-                    return await req(url, method, value)
+                    return await req(url, method, value, router)
                 } else if(confTokenStatus == 401){
                     await del("confirmToken")
                 } else {
@@ -36,17 +36,18 @@ export default async function req(url: string, method: string = "GET", value?: o
         } else {
             return response.status
         }
+        
         // return await req(url, method, value)
     } else {
-        if (typeof window !== 'undefined' && navigator.storage) {
-            try {
-                if (!await navigator.storage.persisted()) {
-                    await navigator.storage.persist();
-                }
-            } catch (e) {
-                console.warn("Storage Manager API error:", e);
-            }
-        }
+        // if (typeof window !== 'undefined' && navigator.storage) {
+        //     try {
+        //         if (!await navigator.storage.persisted()) {
+        //             await navigator.storage.persist();
+        //         }
+        //     } catch (e) {
+        //         console.warn("Storage Manager API error:", e);
+        //     }
+        // }   Если сессия опять будет слетать спустя сутки то расскоментировать
         const response = await fetch('/api/back/' + url, {method: method, headers: {"Content-Type": "application/json"}, body: JSON.stringify(value)})
         console.log(value)
         if(response.status == 401){
@@ -73,7 +74,6 @@ async function refershToken() {
                 await set("refershToken", tokens.refershToken)
                 await set("accessToken", tokens.accessToken)
                 await set("confirmToken", tokens.confirmToken)
-                console.log(tokens)
                 const conTokenRespons = await fetch("/api/back/session/confirm/" + tokens.confirmToken, {method: "POST", headers: headers})
                 if(!conTokenRespons.ok){
                     return false

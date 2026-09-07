@@ -17,7 +17,6 @@ export default function GetChapter(){
             }
             setChapter(el)
             req(`chapter/checkstatus/${el.id}`).then((checkStatus: UserCheckChapter) =>{
-                console.log(el.id)
                 if(typeof(checkStatus) != "number"){
                     setTimeout(() => {
                         const scrToEl = document.getElementById(checkStatus.pNumber.toString())

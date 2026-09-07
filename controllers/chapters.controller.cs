@@ -76,11 +76,16 @@ public class ChapterController: ControllerBase
         if(login != null){
             Guid userId = (await database.Users.FirstAsync(el => el.Login == login)).Id;
             if(chapter != null){
-                UserCheckChapter userCheck = await database.UserCheckChapters.SingleAsync(cChapter => cChapter.CidUsId == chapter.Id + userId);
-                userCheck.PNumber = inStatus.pNumber;
-                userCheck.Date = DateTime.UtcNow;
-                await database.SaveChangesAsync();
-                return Result<UserCheckChapter>.Succesful(userCheck);
+                try{
+                    UserCheckChapter userCheck = await database.UserCheckChapters.SingleAsync(cChapter => cChapter.CidUsId == chapter.Id + userId);
+                    userCheck.PNumber = inStatus.pNumber;
+                    userCheck.Date = DateTime.UtcNow;
+                    await database.SaveChangesAsync();
+                    return Result<UserCheckChapter>.Succesful(userCheck);
+                } catch{
+                    return Result<UserCheckChapter>.Fail(400, "Глава не читана");
+                }
+                
             }
             return Result<UserCheckChapter>.Fail(404, "Глава не найдена");
         }

@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+
+[Index(nameof(Name), IsUnique = true)]
 public class Role{
     public Guid Id {get; set;}
     public string Name {get; set;}
