@@ -2,7 +2,7 @@
 import { JSX, useEffect, useState } from "react"
 import req from "../utilities/request";
 import Role from "../models/role";
-import User from "../models/user";
+import UsersComponent from "./users";
 
 export default function AdminPanel() {
     const [rolePage, setRolePage] = useState<JSX.Element>();
@@ -22,20 +22,11 @@ export default function AdminPanel() {
                 </div>)
             }
         })
-        req("user/getAll").then((users: User) => {
-            if(typeOf(users) != "number"){
-                users.map(user => {
-                    return (<div>
-                        <div> Индификатор пользователя: {user.Id} </div>
-                        <div> Имя пользователя: {user.Name} </div>
-                        <div> Роль пользователя: {user.Role} </div>
-                    </div>)
-                })
-            }
-        })
+        
     }, [])
     return (
     <section>
         {rolePage}
+        <UsersComponent></UsersComponent>
     </section>)
 }

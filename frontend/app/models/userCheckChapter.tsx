@@ -1,5 +1,3 @@
-
-
 export default interface UserCheckChapter{
     id: string;
     userId: string;

@@ -79,12 +79,12 @@ public class UserController : ControllerBase
             return Result<ProfileM>.Fail(401, "Аккаунт не найден");
         }
     }
-    [HttpGet("getAll")]
-    [TypeFilter(typeof(AuthFilter), Arguments = ["usersMenegment"])]
-    public async Task<Result<List<User>>> GetProfile([FromHeader(Name = "Authorization")] string jwtToken)
+    [HttpGet("getAll/{page}")]
+    [TypeFilter(typeof(AuthFillter), Arguments = ["usersMenegment"])]
+    public async Task<Result<List<User>>> GetUsers(int page)
     {
         try{
-            List<User> users = await database.Users.ToListAsync();
+            List<User> users = await database.Users.OrderBy(user => user.Name).Skip(page * 50).Take(50).ToListAsync();
             return Result<List<User>>.Succesful(users);
         }
         catch{

@@ -17,15 +17,20 @@ public class AuthFillter : IAsyncActionFilter
         try {
             string token = httpContext.HttpContext.Request.Headers.Authorization.ToString();
             new JwtSecurityTokenHandler ().ValidateToken(token[7..], Functions.ValidateParams, out _);
-            string? StringRole = await cache.GetStringAsync(Functions.GetRoleIsToken(token));
+            string roleInToken = Functions.GetRoleIsToken(token);
+            string? StringRole = await cache.GetStringAsync(roleInToken);
             if(StringRole != null) {
-                Role? role = JsonSerializer.Deserialize<Role>(StringRole);
-                if(role != null){
-                    foreach(string roleRule in role.Rules){
-                        if(roleRule == this.rule){
-                            await next();
+                if(roleInToken != "Admin"){
+                    Role? role = JsonSerializer.Deserialize<Role>(StringRole);
+                    if(role != null){
+                        foreach(string roleRule in role.Rules){
+                            if(roleRule == this.rule){
+                                await next();
+                            }
                         }
                     }
+                } else {
+                    await next();
                 }
             }
             httpContext.HttpContext.Response.StatusCode = 403;
