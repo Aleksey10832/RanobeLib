@@ -33,3 +33,22 @@ body {
   border-radius: 5px;
   padding: 20px;
 }
+.nav-buttons{
+  display: grid;
+  grid-template-columns: 1;
+  gap: 10px;
+  width: 150px;
+}
+.nav-buttons button{
+  width: 67px;
+  height: 45px;
+  background-color: rgb(150, 141, 141);
+  border-radius: 5px;
+  padding: 5px;
+  cursor: pointer;
+  transition: 0.3;
+  display: block;
+}
+.nav-buttons button:hover{
+  transform: scale(1.04);
+}

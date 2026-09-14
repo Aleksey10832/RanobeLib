@@ -20,7 +20,7 @@ export default async function req(url: string, method: string = "GET", value?: o
                     return 500
                 }
             } else {
-                if(!await refershToken()){
+                if(!await refershToken(router)){
                     return 401
                 }
                 return await req(url, method, value)
@@ -51,13 +51,14 @@ export default async function req(url: string, method: string = "GET", value?: o
         const response = await fetch('/api/back/' + url, {method: method, headers: {"Content-Type": "application/json"}, body: JSON.stringify(value)})
         console.log(value)
         if(response.status == 401){
+            router?.replace("/auth/login")
             return 401
         }
         return await response.json()
     }
 }
 let refershPromise: Promise<boolean> | null = null;
-async function refershToken() {
+async function refershToken(router?: AppRouterInstance) {
     if(refershPromise){
         return refershPromise
     }
@@ -68,6 +69,7 @@ async function refershToken() {
             if(refTokens.status == 401){
                 await del("refershToken")
                 await del("accessToken")
+                router?.replace("/auth/login")
                 return false
             } else{
                 const tokens = await refTokens.json()

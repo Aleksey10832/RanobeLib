@@ -19,7 +19,7 @@ public class UserController : ControllerBase
         this.service = service;
     }
     [HttpPost("create")]
-    [TypeFilter(typeof(AdminFillter))]
+    [TypeFilter(typeof(AuthFillter),  Arguments = ["userCreate"])]
     public async Task<Result<User>> CreateUser( [FromBody] IUserM user)
     {
         if(user.Role != null){

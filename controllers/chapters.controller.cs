@@ -3,7 +3,6 @@ using App.Result;
 using DbConnect;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Update;
 
 namespace App.Controller.RanobeController;
 

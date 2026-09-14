@@ -61,7 +61,7 @@ public class RanobeController: ControllerBase
     }
 
     [HttpDelete("{RanobeId}")]
-    [TypeFilter(typeof(AdminFillter))]
+    [TypeFilter(typeof(AuthFillter),  Arguments = ["ranobeDelete"])]
     public async Task<Result<string>> DeleteRanobe( string RanobeId )
     {
         if(await database.Ranobes.FindAsync(RanobeId) == null)

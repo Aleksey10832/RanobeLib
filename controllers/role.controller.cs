@@ -1,4 +1,5 @@
 using System.Text.Json;
+using App.Controller.Filter.AuthFillter;
 using App.Result;
 using DbConnect;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ public class RanobeController: ControllerBase{
     }
 
     [HttpPost("set")]
-    [TypeFilter(typeof(AdminFillter))]
+    [TypeFilter(typeof(AuthFillter),  Arguments = ["roleSet"])]
     public async Task<Result<Role>> SetRole([FromBody] Role role){
         await cache.SetStringAsync("Role" + role.Name, JsonSerializer.Serialize(role));
         Role? dbRole = await database.Roles.SingleOrDefaultAsync(findRole => role.Name == findRole.Name);
@@ -29,18 +30,9 @@ public class RanobeController: ControllerBase{
         return Result<Role>.Succesful(JsonSerializer.Deserialize<Role>(await cache.GetStringAsync("Role" + role.Name))); 
     }
     [HttpGet("get")]
-    [TypeFilter(typeof(AdminFillter))]
+    [TypeFilter(typeof(AuthFillter),  Arguments = ["roleGet"])]    
     public async Task<Result<List<Role>>> getRoles(){
         List<Role> roles = await database.Roles.ToListAsync();
-        // foreach( Role roleName in roles){
-        //     string? cacheRole = await cache.GetStringAsync("Role" + roleName.Name);
-        //     if(cacheRole != null){
-        //         Role? role = JsonSerializer.Deserialize<Role>(cacheRole);
-        //         if( role != null){
-        //             roleName.Rules = role.Rules;
-        //         }
-        //     }
-        // }
         return Result<List<Role>>.Succesful(roles); 
     }
 }
