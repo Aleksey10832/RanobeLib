@@ -1,4 +1,4 @@
 .env
 Migrations
-/obj/
-/bin/
+obj
+bin

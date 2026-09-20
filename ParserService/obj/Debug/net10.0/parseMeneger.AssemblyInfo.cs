@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("parseMeneger")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+40a8960a52d5fe4e2862ad93978e4d3e2c22e94b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+adcd8bcbf8cf4ffdc01cbf57e68514bf5507932f")]
 [assembly: System.Reflection.AssemblyProductAttribute("parseMeneger")]
 [assembly: System.Reflection.AssemblyTitleAttribute("parseMeneger")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
