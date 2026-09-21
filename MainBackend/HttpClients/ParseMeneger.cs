@@ -22,6 +22,14 @@ public class ParsersMeneger {
             return Result<ParseModel>.Fail(400, "Request is not valid");
         }
     }
+    public async Task<Result<Ranobe>> GetParseResult(string ranobeUrl){
+        Ranobe? response = await _httpClient.GetFromJsonAsync<Ranobe>($"parse/{ranobeUrl}");
+        if(response != null){
+            return Result<Ranobe>.Succesful(response);
+        } else{
+            return Result<Ranobe>.Fail(400, "Request is not valid");
+        }
+    }
     public async Task<Result<ParseModel>> SetParseStatus(string ranobeUrl, string accessToken ){
         User? user = await _database.Users.SingleOrDefaultAsync(user => user.Login == Functions.GetLoginIsToken(accessToken));
         StringContent content =  new StringContent(JsonSerializer.Serialize(

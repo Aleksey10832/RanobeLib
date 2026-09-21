@@ -37,6 +37,8 @@ public class ParseController: ControllerBase
         {
             chapter.paragrafs = await database.Paragrafs.Where(el => el.chapterId == chapter.Id).ToListAsync();
         }
+        ranobe.RanobeUrl = null;
+        System.Console.WriteLine(ranobe.Name);
         return Result<RanobeModel>.Succesful(ranobe);
     }
     [HttpPost]
