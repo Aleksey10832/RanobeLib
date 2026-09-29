@@ -1,5 +1,5 @@
 .env
 Migrations
 obj
-Debug
+/obj/
 bin

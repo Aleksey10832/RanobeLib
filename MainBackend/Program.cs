@@ -1,3 +1,4 @@
+using App.HttpClients.Parse;
 using App.Services.SessionService;
 using DbConnect;
 using dotenv.net;
@@ -16,6 +17,11 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
+});
+builder.Services.AddHttpClient<ParsersMeneger>(client =>
+{
+    client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("ParserAdress"));
+    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Environment.GetEnvironmentVariable("CONNECT_KEY"));
 });
 builder.Services.AddControllers();
 builder.Services.AddScoped<ISessionService, SessionService>();
